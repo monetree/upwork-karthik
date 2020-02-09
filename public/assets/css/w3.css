@@ -1,0 +1,35 @@
+.w3-row-padding:after,
+.w3-row-padding:before,
+.w3-bar:after {
+	content: "";
+	display: table;
+	clear: both
+}
+
+.w3-row-padding,
+.w3-row-padding>.w3-half,
+.w3-row-padding>.w3-third,
+.w3-row-padding>.w3-col {
+	padding: 0 8px
+}
+
+.w3-third,
+.w3-quarter {
+	float: left;
+	width: 100%
+}
+
+@media (min-width:601px) {
+	.w3-col.m4,
+	.w3-third {
+		width: 33.33333%
+	}
+}
+
+
+.w3-row-padding,
+.w3-row-padding>.w3-half,
+.w3-row-padding>.w3-third,
+.w3-row-padding>.w3-col {
+	padding: 0 8px
+}
