@@ -10,7 +10,8 @@ class Summary extends React.Component {
         super(props);
         this.state = {
             navbar:true,
-            activepill: "SSF"
+            activepill: "SSF",
+            datasource: []
         }
         this.linechart = React.createRef()
         this.linechart2 = React.createRef()
@@ -35,6 +36,12 @@ class Summary extends React.Component {
       this.thresholdchart.current.componentDidMount(ssf_type)
     }
 
+    loadData = (datasource) => {
+      this.setState({
+        datasource: datasource
+      })
+    }
+
     render(){
         return (
             <div className={this.state.navbar ? "navbar-fixed sidebar-fixed right-sidebar-toggoler-out sidebar-mobile-out" : "navbar-fixed sidebar-fixed right-sidebar-toggoler-out sidebar-mobile-in"} style={this.state.navbar ? { overflow: 'auto' } : {overflow: 'hidden'}} id="body">
@@ -44,7 +51,7 @@ class Summary extends React.Component {
                 )
             }
             <div className="wrapper">
-            <Sidebar handleSidebar={this.handleSidebar}/>
+            <Sidebar loadData={this.loadData} handleSidebar={this.handleSidebar}/>
 
               <div className="page-wrapper">
               <Header handleSidebar={this.handleSidebar}/>

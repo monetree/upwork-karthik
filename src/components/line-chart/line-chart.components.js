@@ -15,81 +15,62 @@ class LineChart extends React.Component {
     
   
 
-  componentDidMount = (ssf_data = false) => {
-
+  componentDidMount = (chart_data= null) => {
     let chart = am4core.create(this.props.chart_id, am4charts.XYChart);
+    let ssf_data = false
 
     chart.paddingRight = 20;
     var title = chart.titles.create();
     
+    chart.data = []
 
-    chart.data = [
-      {"date":"2020-01-10","visits":1,"market1": 71,"stroke":"0",
-      "market2": 75,
-      "sales1": 5,
-      "sales2": 8},
-      {"date":"2020-02-20","visits":24,"market1": 74,"stroke":"0",
-      "market2": 78,
-      "sales1": 4,
-      "sales2": 6},
-      {"date":"2020-03-12","visits":13, "market1": 78,"stroke":"0",
-      "market2": 88,
-      "sales1": 5,
-      "sales2": 2},
-      {"date":"2020-04-15","visits":19,"market1": 85,"stroke":"10",
-      "market2": 89,
-      "sales1": 8,
-      "sales2": 9},
-      {"date":"2020-05-19","visits":10, "market1": 82,"stroke":"0",
-      "market2": 89,
-      "sales1": 9,
-      "sales2": 6},
-      {"date":"2020-06-22","visits":22, "market1": 83,
-      "market2": 85,
-      "sales1": 3,
-      "sales2": 5,
-      "stroke":"0"}
-      
-      ]
+
+
+
+  if(chart_data){
+    chart.data = chart_data;
+  }
+
+
 
       if(ssf_data && ssf_data === "MT"){
         chart.data = [
-          {"date":"2020-01-10","visits":1,"market1": 21,"stroke":"0",
+          {"dateTime":"2020-01-10","visits":1,"market1": 21,"stroke":"0",
           "market2": 75,
           "sales1": 5,
           "sales2": 8},
-          {"date":"2020-02-20","visits":24,"market1": 54,"stroke":"0",
+          {"dateTime":"2020-02-20","visits":24,"market1": 54,"stroke":"0",
           "market2": 78,
           "sales1": 4,
           "sales2": 6},
-          {"date":"2020-03-12","visits":13, "market1": 78,"stroke":"0",
+          {"dateTime":"2020-03-12","visits":13, "market1": 78,"stroke":"0",
           "market2": 88,
           "sales1": 5,
           "sales2": 2},
-          {"date":"2020-04-15","visits":19,"market1": 155,"stroke":"10",
+          {"dateTime":"2020-04-15","visits":19,"market1": 155,"stroke":"10",
           "market2": 89,
           "sales1": 8,
           "sales2": 9},
-          {"date":"2020-05-19","visits":10, "market1": 122,"stroke":"0",
+          {"dateTime":"2020-05-19","visits":10, "market1": 122,"stroke":"0",
           "market2": 89,
           "sales1": 9,
           "sales2": 6}
           ]
       } else if (ssf_data && ssf_data === "MICRO"){
         chart.data = [
-          {"date":"2020-01-10","visits":15,"market1": 201,"stroke":"0",
+          {"dateTime":"2020-01-10","visits":15,"market1": 201,"stroke":"0",
           "market2": 75,
           "sales1": 5,
           "sales2": 8},
-          {"date":"2020-02-20","visits":14,"market1": 154,"stroke":"0",
+          {"dateTime":"2020-02-20","visits":14,"market1": 154,"stroke":"0",
           "market2": 78,
           "sales1": 4,
           "sales2": 6},
-          {"date":"2020-03-12","visits":63, "market1": 78,"stroke":"0",
+          {"dateTime":"2020-03-12","visits":63, "market1": 78,"stroke":"0",
           "market2": 88,
           "sales1": 5,
           "sales2": 2},
-          {"date":"2020-04-15","visits":19,"market1": 65,"stroke":"10",
+          {"dateTime":"2020-04-15","visits":19,"market1": 65,"stroke":"10",
           "market2": 89,
           "sales1": 8,
           "sales2": 9}
@@ -97,33 +78,52 @@ class LineChart extends React.Component {
       }
   
 
+    chart.dateFormatter.inputDateFormat = "yyyy.MM.dd";
 
     let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+
+
+
     dateAxis.baseInterval = {
     "timeUnit": "minute",
     "count": 1
     };
-    dateAxis.tooltipDateFormat = "HH:mm, d MMMM";
-    dateAxis.renderer.grid.template.disabled = true;
 
-    chart.zoom.disabled = true
+      dateAxis.title.text = "Dates";
+      dateAxis.tooltipDateFormat = "HH:mm, d MMMM";
+      dateAxis.renderer.grid.template.disabled = true;
+      dateAxis.renderer.grid.template.location = 0;
+      dateAxis.renderer.minGridDistance = 50;
+      dateAxis.tooltip.disabled = true;
+      dateAxis.extraMax = 0.1;
+      dateAxis.extraMin = 0.1
+      dateAxis.dateFormats.setKey("month","dd-MMM-yy");
+      dateAxis.periodChangeDateFormats.setKey('month',"dd-MMM-yy")
+      dateAxis.renderer.labels.template.fontSize = 13
+
+
+    // chart.zoom.disabled = true
+    chart.scrollbarX = new am4core.Scrollbar();
 
     let valueAxis = chart.yAxes.push(new am4charts.ValueAxis());
     valueAxis.tooltip.disabled = true;
-    valueAxis.title.text = "Unique visitors";
+    valueAxis.title.text = "Sessions";
 
     let valueAxis2 = chart.yAxes.push(new am4charts.ValueAxis());
-    valueAxis2.title.text = "Market Days";
+    // valueAxis2.title.text = "Market Days";
     valueAxis2.renderer.opposite = true;
     valueAxis2.renderer.grid.template.disabled = true;
 
 
     let serie1 = chart.series.push(new am4charts.LineSeries());
-    serie1.dataFields.dateX = "date";
+    serie1.dataFields.dateX = "dateTime";
     serie1.dataFields.valueY = "visits";
     serie1.tooltipText = "Visits: [bold]{valueY}[/]";
     serie1.fillOpacity = 0.8;
     serie1.strokeOpacity = 0;
+    serie1.minBulletDistance = 1;
+
+
 
     if(this.props.threshold){
       let bullet4 = serie1.bullets.push(new am4charts.CircleBullet());
@@ -139,7 +139,7 @@ class LineChart extends React.Component {
     if(this.props.trend_line){
       let series2 = chart.series.push(new am4charts.LineSeries());
       series2.dataFields.valueY = "market1";
-      series2.dataFields.dateX = "date";
+      series2.dataFields.dateX = "dateTime";
       series2.name = "Market Days";
       series2.strokeWidth = 2;
       series2.stroke = am4core.color("#37FF82");

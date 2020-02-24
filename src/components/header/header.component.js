@@ -19,8 +19,13 @@ class Header extends React.Component {
         })
       }
 
+      handleOperators = (e) => {
+        this.props.handleOperator(e.target.value)
+      }
+
       
     render(){
+      const { operators } = this.props;
         return (          
             <header className="main-header" id="header">
             <nav className="navbar navbar-expand-lg navbar-light" id="navbar">
@@ -41,7 +46,15 @@ class Header extends React.Component {
               
                     <ul className={this.state.manageprofiletoggle ? "dropdown-menu dropdown-menu-right show" : "dropdown-menu dropdown-menu-right"}>
                       <li className="tc pa10">
-                        Logout
+                      <input list="browsers" name="browser" onChange={this.handleOperators} />
+                      <datalist id="browsers">
+                        {
+                          operators.map((operator) => (
+                            <option value={operator} />
+                          ))
+                        }
+                      </datalist>
+
                       </li>
                     </ul>
                   </li>

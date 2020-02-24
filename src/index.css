@@ -446,3 +446,7 @@ ul#inline-list li {
 .main-font {
 	font-family: Proxima Nova !important;
 }
+
+.fa-thumbs-up{
+	color: rgb(10, 202, 84);
+}

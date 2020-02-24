@@ -14,62 +14,22 @@ class CandleChart extends React.Component {
     };
   
 
-  componentDidMount = () => {
+  componentDidMount = (chart_data=null) => {
     am4core.useTheme(am4themes_animated);
     // Themes end
     
     let chart = am4core.create("candelchart", am4charts.XYChart);
     chart.paddingRight = 20;
 
-    chart.data = [ {
-        "zone": "Zone-1",
-        "max": 152.3,
-        "high": 156.96,
-        "low": 121.15,
-        "min": 136.49,
-        "max2": 156.3,
-        "high2": 162.96,
-        "low2": 122.15,
-        "min2": 137.49,
-        "background":"#37FF82",
-        "threshold": "100",
-        "avg": 20,
-        "threshold2": "20",
-        "avg2": 100
-      }, {
-        "zone": "Zone-2",
-        "max": 154.3,
-        "high": 155.96,
-        "low": 119.15,
-        "min": 137.49,
-        "max2": 153.3,
-        "high2": 160.96,
-        "low2": 123.15,
-        "min2": 138.49,
-        "background":"#37FF82",
-        "threshold": "100",
-        "avg": 21,
-        "threshold2": "201",
-        "avg2": 197
-      }, {
-        "zone": "Zone-3",
-        "max": 152.3,
-        "high": 156.96,
-        "low": 121.15,
-        "min": 136.49,
-        "max2": 156.3,
-        "high2": 162.96,
-        "low2": 122.15,
-        "min2": 137.49,
-        "background":"#37FF82",
-        "threshold": "100",
-        "avg": 20,
-        "threshold2": "201",
-        "avg2": 100
-      }];
+    chart.data = []
+
+      if(chart_data){
+        chart.data = chart_data
+      }
 
       for(let i of chart.data){
-          if(i.threshold > i.avg){
+          if(parseInt(i.threshold) > i.avg){
+            console.log(parseInt(i.threshold), i.avg)
               i["background"] = "#37FF82"
           } else {
             i["background"] = "#FF7171"
@@ -78,7 +38,7 @@ class CandleChart extends React.Component {
 
 
       for(let i of chart.data){
-        if(i.threshold2 > i.avg2){
+        if(parseInt(i.threshold2) > i.avg2){
             i["background2"] = "#37FF82"
         } else {
           i["background2"] = "#FF7171"
@@ -179,6 +139,7 @@ class CandleChart extends React.Component {
 
 
     // series. = am4core.color("red");
+
     function createBackground(x, y, widthin, heightin, colorin) {
         var rect = chart.createChild(am4core.Rectangle);
         rect.isMeasured = false;
@@ -193,13 +154,19 @@ class CandleChart extends React.Component {
         rect.hiddenState.transitionDuration = 0;
       }
   
-  
-    createBackground(0, 0, 16, 100, "red");
-    createBackground(16, 0, 17, 100, "blue");
-    createBackground(33, 0, 17, 100, "red");
-    createBackground(50, 0, 17, 100, "blue");
-    createBackground(67, 0, 16, 100, "red");
-    createBackground(83, 0, 17, 100, "blue");
+      if(chart.data.length === 3){
+        createBackground(0, 0, 16, 100, "red");
+        createBackground(16, 0, 17, 100, "blue");
+        createBackground(33, 0, 17, 100, "red");
+        createBackground(50, 0, 17, 100, "blue");
+        createBackground(67, 0, 16, 100, "red");
+        createBackground(83, 0, 17, 100, "blue");
+      } else if (chart.data.length === 2){    
+        createBackground(0, 0, 24, 100, "red");
+        createBackground(24, 0, 26, 100, "blue");
+        createBackground(50, 0, 26, 100, "red");
+        createBackground(76, 0, 24, 100, "blue");
+      } 
 
 
 
