@@ -5,15 +5,56 @@ class Certificate extends React.Component {
   constructor(props){
     super(props);
     this.state = {
-      
+      total_no_of_certification_sessions_SSF:0,
+      total_no_of_certification_sessions_MT:0,
+      total_no_of_certification_sessions_MICRO:0,
+      total_time_chart_certification_ssf_min:0,
+      total_time_chart_certification_ssf_avg:0,
+      total_time_chart_certification_mt_max:0,
+      total_time_chart_certification_mt_min:0,
+      total_time_chart_certification_mt_avg:0,
+      total_time_chart_certification_micro_max:0,
+      total_time_chart_certification_micro_min:0,
+      total_time_chart_certification_micro_avg:0,
     }
   }
 
   componentDidMount(){
-    handleScreenCapture("certificate", "certificate", false)
+    if(!localStorage.getItem("certificate_data")){
+      this.props.history.push("/info")
+    }
+    let certificate_data = JSON.parse(localStorage.getItem("certificate_data"))
+    this.setState({
+      total_no_of_certification_sessions_SSF:certificate_data.total_no_of_certification_sessions_SSF,
+      total_no_of_certification_sessions_MT:certificate_data.total_no_of_certification_sessions_MT,
+      total_no_of_certification_sessions_MICRO:certificate_data.total_no_of_certification_sessions_MICRO,
+      total_time_chart_certification_ssf_min:certificate_data.total_time_chart_certification_ssf_min,
+      total_time_chart_certification_ssf_avg:certificate_data.total_time_chart_certification_ssf_avg,
+      total_time_chart_certification_mt_max:certificate_data.total_time_chart_certification_mt_max,
+      total_time_chart_certification_mt_min:certificate_data.total_time_chart_certification_mt_min,
+      total_time_chart_certification_mt_avg:certificate_data.total_time_chart_certification_mt_avg,
+      total_time_chart_certification_micro_max:certificate_data.total_time_chart_certification_micro_max,
+      total_time_chart_certification_micro_min:certificate_data.total_time_chart_certification_micro_min,
+      total_time_chart_certification_micro_avg:certificate_data.total_time_chart_certification_micro_avg
+    }, () => handleScreenCapture("certificate", "certificate", false))
+
   }
 
   render() {
+    const {
+      total_no_of_certification_sessions_SSF,
+      total_no_of_certification_sessions_MT,
+      total_no_of_certification_sessions_MICRO ,
+      total_time_chart_certification_ssf_min,
+      total_time_chart_certification_ssf_avg,
+      total_time_chart_certification_mt_max,
+      total_time_chart_certification_mt_min,
+      total_time_chart_certification_mt_avg,
+      total_time_chart_certification_micro_max,
+      total_time_chart_certification_micro_min,
+      total_time_chart_certification_micro_avg,
+    } = this.state;
+
     return (
       <div className="certificate" id="certificate">
       <div className="certbox">
@@ -40,21 +81,21 @@ class Certificate extends React.Component {
               </tr>
               <tr>
                 <td>No. of Certification Sessions</td>
-                <td>10</td>
-                <td>10</td>
-                <td>10</td>
+                <td>{total_no_of_certification_sessions_SSF}</td>
+                <td>{total_no_of_certification_sessions_MT}</td>
+                <td>{total_no_of_certification_sessions_MICRO}</td>
               </tr>
               <tr>
                 <td>Average Time</td>
-                <td>4</td>
-                <td>4</td>
-                <td>4</td>
+                <td>{total_time_chart_certification_ssf_avg}</td>
+                <td>{total_time_chart_certification_mt_avg}</td>
+                <td>{total_time_chart_certification_mt_avg}</td>
               </tr>
               <tr>
                 <td>Best Time</td>
-                <td>203.3</td>
-                <td>203.3</td>
-                <td>203.3</td>
+                <td>{total_time_chart_certification_ssf_min}</td>
+                <td>{total_time_chart_certification_mt_min}</td>
+                <td>{total_time_chart_certification_micro_min}</td>
               </tr>
               <tr>
                 <td>Best Performing Zone</td>

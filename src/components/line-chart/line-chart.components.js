@@ -25,8 +25,6 @@ class LineChart extends React.Component {
     chart.data = []
 
 
-
-
   if(chart_data){
     chart.data = chart_data;
   }

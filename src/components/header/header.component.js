@@ -20,6 +20,9 @@ class Header extends React.Component {
       }
 
       handleOperators = (e) => {
+        this.setState({
+          manageprofiletoggle:false
+        })
         this.props.handleOperator(e.target.value)
       }
 
@@ -46,7 +49,7 @@ class Header extends React.Component {
               
                     <ul className={this.state.manageprofiletoggle ? "dropdown-menu dropdown-menu-right show" : "dropdown-menu dropdown-menu-right"}>
                       <li className="tc pa10">
-                      <input list="browsers" name="browser" onChange={this.handleOperators} />
+                      <input list="browsers" className="form-control" name="browser" onChange={this.handleOperators} />
                       <datalist id="browsers">
                         {
                           operators.map((operator) => (

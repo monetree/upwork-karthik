@@ -6,6 +6,7 @@ import Datepicker from "../UI/datepicker";
 import {Link} from "react-router-dom";
 import CandleChart from "../components/candle-chart/candle-chart.component";
 import LineChartReverse from "../components/line-chart-reverse/line-chart-reverse.component";
+import Popup from "reactjs-popup";
 
 
 const getTotalTimeTakenVsSessionNumber = (datasource, formFactor) => {
@@ -77,35 +78,31 @@ const getTraingandCertificationData = (datasource,formFactor,  mode) => {
     let counter = 0;
       for (let i of output){
         counter+=1
-        // i["zone"+counter] = i["zone"+counter].sort(function(a, b){return a-b})
         i["max"] = i["zone"+counter].sort(function(a, b){return a-b})[i["zone"+counter].sort(function(a, b){return a-b}).length - 1]
         i["min"] = i["zone"+counter].sort(function(a, b){return a-b})[0]
         i["avg"] =  i["zone"+counter].sort(function(a, b){return a-b}).reduce((a, b) => a + b, 0)/i["zone"+counter].sort(function(a, b){return a-b}).length
-        i["high"] = 156.96
-        i["low"] = 136.96
-        i["high2"] = 126.96
-        i["low2"] = 150.96
+        i["high"] = i["zone"+counter].sort(function(a, b){return a-b})[i["zone"+counter].sort(function(a, b){return a-b}).length - 1]+(i["zone"+counter].sort(function(a, b){return a-b})[i["zone"+counter].sort(function(a, b){return a-b}).length - 1]/10)
+        i["low"] = i["zone"+counter].sort(function(a, b){return a-b})[0] - (i["zone"+counter].sort(function(a, b){return a-b})[0]/10)
         i["background"] = "#37FF82"
-        i["threshold"] = 100
+        i["threshold"] = 10
         i["threshold2"] = 20
       }
-
       return output
 }
 
 const getCandleStickData = (datasource, formFactor) => {
   let training_res = getTraingandCertificationData(datasource,formFactor, "Training")
   let certificate_res = getTraingandCertificationData(datasource,formFactor, "Certification")
- 
   for(let i=0; i < training_res.length;i++){
+    training_res[i]["zone"] = "Zone-"+i
     training_res[i]["max2"] = certificate_res[i]["max"]
     training_res[i]["min2"] = certificate_res[i]["min"]
     training_res[i]["avg2"] = certificate_res[i]["avg"]
+    training_res[i]["high2"] = certificate_res[i]["max"]+(certificate_res[i]["max"]/10)
+    training_res[i]["low2"] = certificate_res[i]["min"] - (certificate_res[i]["min"]/10)
   }
   return training_res      
 }
-
-
 
 class Info extends React.Component {
     constructor(props){
@@ -115,6 +112,7 @@ class Info extends React.Component {
             activepill: "SSF",
             datasource: [],
             operators: [],
+            operator: null,
             total_no_of_training_sessions: 0,
             total_no_of_certification_sessions :0,
             total_time_taken: 0,
@@ -127,9 +125,19 @@ class Info extends React.Component {
             total_time_chart_certification_ssf_max: 0,
             total_time_chart_certification_ssf_min: 0,
             total_time_chart_certification_ssf_avg: 0,
+            total_time_chart_certification_mt_max: 0,
+            total_time_chart_certification_mt_min: 0,
+            total_time_chart_certification_mt_avg: 0,
+            total_time_chart_certification_micro_max: 0,
+            total_time_chart_certification_micro_min: 0,
+            total_time_chart_certification_micro_avg: 0,
             total_time_chart_training_ssf_max: 0,
             total_time_chart_training_ssf_min: 0,
-            total_time_chart_training_ssf_avg: 0
+            total_time_chart_training_ssf_avg: 0,
+            certificate_threshold:0,
+            training_threshold:0,
+            certification_threshold_for_candel:[],
+            training_threshold_for_candel: []
         }
         this.linechart = React.createRef()
         this.linechartfirst = React.createRef()
@@ -139,6 +147,11 @@ class Info extends React.Component {
         this.linechart4 = React.createRef()
         this.barchart = React.createRef()
         this.thresholdchart = React.createRef()
+    }
+
+    addTotalTimeThreshold = () => {
+      const { training_threshold,  certificate_threshold} = this.state;
+
     }
 
     handleSidebar = () => {
@@ -189,20 +202,77 @@ class Info extends React.Component {
       })
     }
 
-    handleOperator = (operator) => {
+    handleNoDta = () => {
+      this.setState({
+        total_no_of_training_sessions: 0,
+        total_no_of_certification_sessions :0,
+        total_time_taken: 0,
+        total_no_of_training_sessions_SSF: 0,
+        total_no_of_training_sessions_MT: 0,
+        total_no_of_training_sessions_MICRO : 0,
+        total_no_of_certification_sessions_SSF : 0,
+        total_no_of_certification_sessions_MT : 0,
+        total_no_of_certification_sessions_MICRO : 0,
+        total_time_chart_certification_ssf_max: 0,
+        total_time_chart_certification_ssf_min: 0,
+        total_time_chart_certification_ssf_avg: 0,
+        total_time_chart_training_ssf_max: 0,
+        total_time_chart_training_ssf_min: 0,
+        total_time_chart_training_ssf_avg: 0
+      })
+      this.linechartfirst.current.componentDidMount([])
+      this.linechartsecond.current.componentDidMount([])
+      this.linechart.current.componentDidMount([])
+      this.linechart2.current.componentDidMount([]) 
+      this.barchart.current.componentDidMount([])
+      this.thresholdchart.current.componentDidMount([])
+      this.linechart3.current.componentDidMount([])
+      this.linechart4.current.componentDidMount([]) 
+    }
+    
+    handleOperator = (operator, from_date=null, to_date = null) => {
+
+      this.setState({
+        operator:operator
+      })
+
       let datasource = this.state.datasource;
       
-
       let selected_datasource = []
       for(let i of datasource){
         if(operator === i["sessions"][0]["name"]){
           selected_datasource = i["sessions"];
         }
       }
+      
+      let required_time_interval_data = []
+      let one_year_back_date = new Date(new Date().setFullYear(new Date().getFullYear() - 1))
 
-      for(let s of selected_datasource){
-        let datetime = s["dateTime"].split("-")[0]
-        console.log(datetime.replace(".","-"))
+      if(from_date){
+        for(let s of selected_datasource){
+          if(s["dateTime"]){
+            let datetime = s["dateTime"].split("-")[0]
+            let first_replace = datetime.replace(".", "-")
+            if(new Date(first_replace.replace(".", "-")) > from_date && new Date(first_replace.replace(".", "-")) < to_date){
+              required_time_interval_data.push(s)
+            }
+          }
+        }
+      } else {
+        for(let s of selected_datasource){
+          if(s["dateTime"]){
+            let datetime = s["dateTime"].split("-")[0]
+            let first_replace = datetime.replace(".", "-")
+            if(new Date(first_replace.replace(".", "-")) > one_year_back_date){
+              required_time_interval_data.push(s)
+            }
+          }
+        }
+      }
+
+      selected_datasource = required_time_interval_data
+      if(!selected_datasource.length){
+        this.handleNoDta()
       }
 
       let total_no_of_training_sessions = 0;
@@ -621,14 +691,105 @@ class Info extends React.Component {
     }
 
     loadFormFactorCharts = () => {
-
       this.linechart.current.componentDidMount(this.state.plot_of_number_of_training_sessions_vs_day_SSF)
       this.linechart2.current.componentDidMount(this.state.plot_of_number_of_certification_sessions_vs_day_SSF) 
       this.barchart.current.componentDidMount(this.state.ssf_candle_stick)
       this.thresholdchart.current.componentDidMount(this.state.threshold_chart_ssf)
       this.linechart3.current.componentDidMount(this.state.total_time_taken_vs_session_number_Training_ssf)
       this.linechart4.current.componentDidMount(this.state.total_time_taken_vs_session_number_Certification_ssf) 
-      
+    }
+
+    handleFilterDates = (start_date, end_date) => {
+      const { operator } = this.state;
+      if(!operator){
+        alert("operator name required")
+        return
+      }
+      this.handleOperator(operator, start_date, end_date)
+    } 
+
+
+
+    onCertificationThresholdChange = (e, index) => {
+      this.state.certification_threshold_for_candel[index] = {"threshold": e.target.value, "index": index}
+      this.setState({
+        certification_threshold_for_candel: this.state.certification_threshold_for_candel
+      })
+    }
+
+    onTrainingThresholdChange = (e, index) => {
+      this.state.training_threshold_for_candel[index] = {"threshold": e.target.value, "index": index}
+      this.setState({
+        training_threshold_for_candel: this.state.training_threshold_for_candel
+      })
+    }
+
+    addThresholds = (close) => {
+      const { 
+        certification_threshold_for_candel, 
+        training_threshold_for_candel,
+        ssf_candle_stick,
+        mt_candle_stick,
+        micro_candle_stick,
+        activepill
+       } = this.state;
+       let candle_data = []
+       if(activepill === "SSF"){
+        candle_data = ssf_candle_stick
+       } else if(activepill === "MT"){
+         candle_data = mt_candle_stick
+       } else {
+         candle_data = micro_candle_stick
+       }
+       for(let i=0;i<candle_data.length;i++){
+        candle_data[i]["threshold"] = training_threshold_for_candel[i]["threshold"]
+        candle_data[i]["threshold2"] = certification_threshold_for_candel[i]["threshold"] 
+       }
+       if(this.state.activepill === "SSF"){
+        this.barchart.current.componentDidMount(candle_data)
+      } else if (this.state.activepill === "MT"){
+        this.barchart.current.componentDidMount(candle_data)
+      } else {
+        this.barchart.current.componentDidMount(candle_data)
+      }
+      close()
+
+    }
+
+
+    printCertificate = () => {
+      const {
+          total_no_of_certification_sessions_SSF,
+          total_no_of_certification_sessions_MT,
+          total_no_of_certification_sessions_MICRO ,
+          total_time_chart_certification_ssf_min,
+          total_time_chart_certification_ssf_avg,
+          total_time_chart_certification_mt_max,
+          total_time_chart_certification_mt_min,
+          total_time_chart_certification_mt_avg,
+          total_time_chart_certification_micro_max,
+          total_time_chart_certification_micro_min,
+          total_time_chart_certification_micro_avg,
+        } = this.state;
+
+        let certificate_data = JSON.stringify({
+          total_no_of_certification_sessions_SSF:total_no_of_certification_sessions_SSF,
+          total_no_of_certification_sessions_MT:total_no_of_certification_sessions_MT,
+          total_no_of_certification_sessions_MICRO:total_no_of_certification_sessions_MICRO,
+          total_time_chart_certification_ssf_min:total_time_chart_certification_ssf_min,
+          total_time_chart_certification_ssf_avg:total_time_chart_certification_ssf_avg,
+          total_time_chart_certification_mt_max:total_time_chart_certification_mt_max,
+          total_time_chart_certification_mt_min:total_time_chart_certification_mt_min,
+          total_time_chart_certification_mt_avg:total_time_chart_certification_mt_avg,
+          total_time_chart_certification_micro_max:total_time_chart_certification_micro_max,
+          total_time_chart_certification_micro_min:total_time_chart_certification_micro_min,
+          total_time_chart_certification_micro_avg:total_time_chart_certification_micro_avg
+        })
+
+        localStorage.setItem("certificate_data", certificate_data)
+        this.setState({
+          certificate_data: certificate_data
+        }, () => this.props.history.push("/certificate"))
     }
 
 
@@ -657,10 +818,28 @@ class Info extends React.Component {
          total_time_chart_training_micro_max,
          total_time_chart_training_micro_min,
          total_time_chart_training_micro_avg,
+         certificate_threshold,
+         training_threshold, 
+         ssf_candle_stick,
+         mt_candle_stick,
+         micro_candle_stick,
          activepill
       } = this.state;
+      const candle_stick_threshold = activepill === "SSF" ? 
+                                                ssf_candle_stick : 
+                                                activepill === "MT" ? 
+                                                mt_candle_stick: 
+                                                micro_candle_stick
+                                                
         return (
             <div className={this.state.navbar ? "navbar-fixed sidebar-fixed right-sidebar-toggoler-out sidebar-mobile-out" : "navbar-fixed sidebar-fixed right-sidebar-toggoler-out sidebar-mobile-in"} style={this.state.navbar ? { overflow: 'auto' } : {overflow: 'hidden'}} id="body">
+            
+            
+            
+           
+
+
+            
             {
                 !this.state.navbar && (
                     <div class="mobile-sticky-body-overlay"></div>
@@ -674,9 +853,11 @@ class Info extends React.Component {
                 <div className="content-wrapper">
                   <div className="content">
                   <div className="fl bold" style={{ color:'#192354', fontSize:'30px' }}>Operator Dashboard - Features</div>
+       
                     <div className="fr">
-                    <Datepicker></Datepicker>
+                    <Datepicker handleFilterDates={this.handleFilterDates}></Datepicker>
                     </div>
+                  
 
                     <br/>
                     <br/>
@@ -706,7 +887,7 @@ class Info extends React.Component {
                     <div className="card card-default">
                       <div className="card-header">    
                         <div className="w3-row-padding ">
-                        <center><button type="button" className="print-btn"><Link to="/certificate" style={{ color:'#fff' }}>Print Certificate</Link></button></center>
+                        <center><button type="button" className="print-btn"  onClick={this.printCertificate}><a href="#" style={{ color:'#fff' }}>Print Certificate</a></button></center>
                         </div>
                         </div>
                     </div>
@@ -733,8 +914,8 @@ class Info extends React.Component {
                                     <img src ="assets/img/ic_training sessions@3x.png" className="dashboard-content-icons"></img>
                                     Total no of certification sessions</div>
                                     <div className="col-xl-4 f30 bold black-color"><div>{total_no_of_certification_sessions}</div></div>
-                                    <div className="col-xl-4">
-                                      <button type="button" className="print-btn"><Link to="/certificate" style={{ color:'#fff' }}>Print Certificate</Link></button>
+                                    <div className="col-xl-4"> 
+                                      <button type="button" className="print-btn" onClick={this.printCertificate}><a href="#" style={{ color:'#fff' }}>Print Certificate</a></button>
                                     </div>
                                   </div>
                                 </div>
@@ -820,8 +1001,60 @@ class Info extends React.Component {
                                     <div className="col-xl-7 col-sm-12">
                                         <div className="card card-default">
                                         <div className="card-header" style={{ background:'#fff', border:'none', color:'#5F61CB', marginTop:'3px' }}>
+                                        <div className="fl">
                                         <p className="bold f13">TOTAL TIME</p>
                                         <p className="f12" style={{ color:'#000' }}>Avg. time, Min. time & max. time with threshold</p>
+
+                                        </div>
+                                        <div className="fr">
+                                        <Popup
+                                            trigger={
+                                                    <button className="btn btn-success mt-4 ma10" style={{ marginLeft:'0.6cm' }}>
+                                                      Add threshold
+                                                    </button>
+                                                    }
+                                            closeOnDocumentClick
+                                            modal
+                                        >{close => (
+                                            <div className="popupContainer">
+                                            
+                                                  <div>
+                                                  <div  class="form-inline">
+                                                      <div className="form-group">
+                                                        Certificate threshold
+                                                      </div>
+                                                      <div className="form-group ml15">
+                                                        Training threshold
+                                                      </div>
+                                                      </div>
+                                                  <div class="form-inline">
+
+                                                    <div className="form-group">
+                                                      <input onChange={(e) => this.setState({ certificate_threshold: e.target.value })} className="form-control" placeholder="Certificate threshold" type="number" />
+                                                    </div>
+                                                    <div className="form-group">
+                                                      <input onChange={(e) => this.setState({ training_threshold: e.target.value })} className="form-control" placeholder="Training threshold" type="number" />
+                                                    </div>
+                                                    </div>
+
+                                                    <div className="form-group">
+                                                      <center>
+                                                    <button className="btn btn-success mr15px" onClick={close}>Submit</button>
+
+                                                    <button className="btn btn-success" onClick={close}>Close</button>
+                                                    </center>
+                                                    </div>
+                                                    
+                                                  </div>
+
+                                            </div>
+                                        )}
+                                        </Popup>
+                                        </div>
+                   
+                               
+
+
                                         </div>
                                             <div className="card-body">
                                                 <div className="row">
@@ -835,15 +1068,24 @@ class Info extends React.Component {
                                                       {activepill === "SSF" ? total_time_chart_certification_ssf_avg : activepill === "MT" ?
                                                         total_time_chart_certification_mt_avg : total_time_chart_certification_micro_avg }
                                                       </p>
-                                                      <p className="cyan-color f12" style={{ marginLeft:'15%' }}>40</p>
+                                                      <p className="cyan-color f12" style={{ marginLeft:'15%' }}>{certificate_threshold}</p>
                                                     </div>
-                                                    <div style={{ background:'lightgrey', height:'30px', width:"100%", borderRadius:'5px', display:'flex' }}>
                                                      
-                                                      <div style={{ background:'#5655B4', width:'15%',height:'30px', marginLeft:"20px", borderRight:'1px solid #F2D822' }}></div>
-                                                      <div style={{ background:'#5655B4', width:'20%',height:'30px', borderRight:'1px solid #76D9F4' }}></div>
-                                                      <div style={{ background:'#5655B4', width:'35%',height:'30px' }}></div>
+                                                     {
+                                                       total_time_chart_certification_ssf_avg || total_time_chart_certification_mt_avg || total_time_chart_certification_micro_avg ? (
+                                                        <div style={{ background:'lightgrey', height:'30px', width:"100%", borderRadius:'5px', display:'flex' }}>
+                                                        <div style={{ background:'#5655B4', width:'15%',height:'30px', marginLeft:"20px", borderRight:'1px solid #F2D822' }}></div>
+                                                        <div style={{ background:'#5655B4', width:'20%',height:'30px', borderRight:'1px solid #76D9F4' }}></div>
+                                                        <div style={{ background:'#5655B4', width:'35%',height:'30px' }}></div>
+                                                        </div>
+                                                       ): (
+                                                        <div style={{ background:'lightgrey', height:'30px', width:"100%", borderRadius:'5px', display:'flex' }}>
+                                                        </div>
+                                                       )
+                                                     }
+                                               
                                                 
-                                                    </div>
+                                                  
                                                     <div>
                                                       <p className="fl min-max-color">MIN - 
                                                       {activepill === "SSF" ? total_time_chart_certification_ssf_min : activepill === "MT" ?
@@ -868,15 +1110,25 @@ class Info extends React.Component {
                                                       {activepill === "SSF" ? total_time_chart_training_ssf_avg : activepill === "MT" ?
                                                         total_time_chart_training_mt_avg : total_time_chart_training_micro_avg }
                                                       </p>
-                                                      <p className="cyan-color f12" style={{ marginLeft:'15%' }}>45</p>
+                                                      <p className="cyan-color f12" style={{ marginLeft:'15%' }}>{training_threshold}</p>
                                                     </div>
                                                 <div> 
-                                                    <div style={{ background:'lightgrey', height:'30px', width:"100%", borderRadius:'5px', display:'flex' }}>
-                                                    <div style={{ background:'#FF7171', width:'30%',height:'30px', marginLeft:"20px", borderRight:'1px solid #76D9F4' }}></div>
-                                                      <div style={{ background:'#FF7171', width:'20%',height:'30px', borderRight:'1px solid #F2D822' }}></div>
-                                                      <div style={{ background:'#FF7171', width:'25%',height:'30px' }}></div>
-                                                
-                                                    </div>
+                                                     {
+                                                       total_time_chart_training_ssf_avg || total_time_chart_training_mt_avg || total_time_chart_training_micro_avg ?
+                                                       (
+                                                        <div style={{ background:'lightgrey', height:'30px', width:"100%", borderRadius:'5px', display:'flex' }}>
+                                                        <div style={{ background:'#FF7171', width:'30%',height:'30px', marginLeft:"20px", borderRight:'1px solid #76D9F4' }}></div>
+                                                        <div style={{ background:'#FF7171', width:'20%',height:'30px', borderRight:'1px solid #F2D822' }}></div>
+                                                        <div style={{ background:'#FF7171', width:'25%',height:'30px' }}></div>
+                                                      </div>
+                                                       ): (
+                                                        <div style={{ background:'lightgrey', height:'30px', width:"100%", borderRadius:'5px', display:'flex' }}>
+                                                        
+                                                      </div>
+                                                       )
+                                                     }
+
+
                                                     <div>
                                                       <p className="fl min-max-color">MIN - 
                                                       {activepill === "SSF" ? total_time_chart_training_ssf_min : activepill === "MT" ?
@@ -976,8 +1228,64 @@ class Info extends React.Component {
                     
                                         <div className="card br10">
                                         <div className="card-header" style={{ background:'#fff', border:'none', color:'#5F61CB', marginTop:'3px' }}>
+                                        
+                                        <div className="fl">
                                         <p className="bold f13">DRILL-DOWN TIMING</p>
                                         <p className="f12" style={{ color:'#000' }}>Avg. time, Min. time & max. time with threshold</p>
+
+                                          </div>
+                                          <div className="fr">
+                                          <Popup
+                                            trigger={
+                                                    <button className="btn btn-success mt-4 ma10" style={{ marginLeft:'0.6cm' }}>
+                                                      Add threshold
+                                                    </button>
+                                                    }
+                                            closeOnDocumentClick
+                                            modal
+                                        >{close => (
+                                            <div className="popupContainer">
+                                            
+                                                  <div>
+                                                      <div  class="form-inline">
+                                                      <div className="form-group">
+                                                        Certificate threshold
+                                                      </div>
+                                                      <div className="form-group ml15">
+                                                        Training threshold
+                                                      </div>
+                                                      </div>
+
+                                                    {
+                                                      candle_stick_threshold.map((candle, index) => (
+                                                        <div key={index} class="form-inline">
+
+                                                           <div className="form-group">
+                                                              <input onChange={(e) => this.onCertificationThresholdChange(e, index)} className="form-control" placeholder="Certificate threshold" type="number" />
+                                                            </div>
+                                                            <div className="form-group">
+                                                              <input onChange={(e) => this.onTrainingThresholdChange(e, index)} className="form-control" placeholder="Training threshold" type="number" />
+                                                            </div>
+                                                        </div>
+                                                      ))
+                                                    }
+                                                   
+
+                                                    <div className="form-group">
+                                                    <button className="btn btn-success mr15px" onClick={() => this.addThresholds(close)}>Submit</button>
+
+                                                    <button className="btn btn-success" onClick={close}>Close</button>
+                                                    </div>
+                                                    
+                                                  </div>
+
+                                            </div>
+                                        )}
+                                        </Popup>
+                                          </div>
+                                 
+                                      
+
                                         </div>
                                         <div className="card-body">
                                         <CandleChart ref={this.barchart} chart_id={"drill_doen-timing"} />

@@ -1,5 +1,4 @@
 import React from "react";
-
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 class Datepicker extends React.Component {
@@ -16,8 +15,18 @@ class Datepicker extends React.Component {
     node2[0].classList.add("main-font")
 
   }
-  onChangeStartDate = date => this.setState({ startDate: date });
-  onChangeEndDate = date => this.setState({ endDate: date });
+  // onChangeStartDate = date => this.setState({ startDate: date });
+  // onChangeEndDate = date => this.setState({ endDate: date });
+
+  onChangeStartDate = (startDate) => {
+    this.setState({ startDate: startDate })
+  }
+
+  onChangeEndDate = (endDate) => {
+    this.setState({ endDate: endDate })
+    this.props.handleFilterDates(this.state.startDate, endDate)
+  }
+
   toggle = () => {
     this.component1.setOpen(this.focus);
     this.focus = !this.focus;
@@ -89,7 +98,9 @@ class Datepicker extends React.Component {
               ></img>{" "}
             </div>
           </div>
+         
         </div>
+     
       </div>
     );
   }
