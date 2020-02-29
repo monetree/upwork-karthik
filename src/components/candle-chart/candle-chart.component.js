@@ -21,7 +21,9 @@ class CandleChart extends React.Component {
     let chart = am4core.create("candelchart", am4charts.XYChart);
     chart.paddingRight = 20;
 
+
     chart.data = []
+
 
       if(chart_data){
         chart.data = chart_data
@@ -29,7 +31,6 @@ class CandleChart extends React.Component {
 
       for(let i of chart.data){
           if(parseInt(i.threshold) > i.avg){
-            console.log(parseInt(i.threshold), i.avg)
               i["background"] = "#37FF82"
           } else {
             i["background"] = "#FF7171"
@@ -170,7 +171,9 @@ class CandleChart extends React.Component {
         createBackground(76, 0, 24, 100, "blue");
       } 
 
-
+      chart.maxZoomLevel = 1;
+      chart.seriesContainer.draggable = false;
+      chart.seriesContainer.resizable = false;
 
 };
 

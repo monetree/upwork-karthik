@@ -17,7 +17,7 @@ class LineChartReverse extends React.Component {
 
   componentDidMount = (chart_data= null) => {
     let chart = am4core.create(this.props.chart_id, am4charts.XYChart);
-
+    chart.cursor = new am4charts.XYCursor();
     chart.paddingRight = 20;
     var title = chart.titles.create();
     
@@ -62,13 +62,20 @@ class LineChartReverse extends React.Component {
 
 
 
-    let serie1 = chart.series.push(new am4charts.LineSeries());
+    let serie1 = chart.series.push(new am4charts.ColumnSeries());
     serie1.dataFields.categoryX = "category";
     serie1.dataFields.valueY = "sessions";
     serie1.tooltipText = "sessions: [bold]{valueY}[/]";
     serie1.fillOpacity = 0.8;
     serie1.strokeOpacity = 0;
     serie1.minBulletDistance = 1;
+
+    let columnTemplate = serie1.columns.template;
+    columnTemplate.strokeWidth = 0;
+    columnTemplate.strokeOpacity = 1;
+    columnTemplate.width = 30;
+
+
 
     let gradient = new am4core.LinearGradient();
     gradient.addColor(am4core.color(this.props.color));

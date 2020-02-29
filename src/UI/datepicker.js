@@ -3,7 +3,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 class Datepicker extends React.Component {
   state = {
-    startDate: new Date(),
+    startDate: new Date(new Date().setFullYear(new Date().getFullYear() - 1)),
     endDate: new Date()
   };
 

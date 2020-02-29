@@ -16,7 +16,7 @@ const getTotalTimeTakenVsSessionNumber = (datasource, formFactor) => {
     if(i["formFactor"] === formFactor){
       let total_time_taken = 0
       for(let j of i["timing"]){
-        for (let k of j["zone"]){
+        for (let k of j["zoneInfo"]){
           if(k["timeInfo"].length){
             total_time_taken+= parseFloat(k["timeInfo"][0])
           }
@@ -54,24 +54,21 @@ const getTraingandCertificationData = (datasource,formFactor,  mode) => {
     }
   }
 
+
   if(!new_data_source.length){
     return []
   }
 
-
-  let input = new_data_source.map(({timing, badgeNumber, name, dateTime, mode, model, formFactor, optionalCards, repetitions}) => ({
-        timing: timing.map(({zone}) => ({
-            zone: zone.reduce((sum, {timeInfo}) => sum + (timeInfo && +timeInfo[0]), 0)
+  let input = new_data_source.map(({timing, ...rest}) => ({
+        timing: timing.map(({zoneInfo}) => ({
+            zone: zoneInfo.reduce((sum, {timeInfo}) => sum + (timeInfo && + timeInfo[0] ? timeInfo[0] : 0), 0)
         })),
-        badgeNumber: badgeNumber,
-        name: name,
-        dateTime:dateTime,
-        mode: mode,
-        model: model,
-        formFactor: formFactor,
-        optionalCards: optionalCards,
-        repetitions: repetitions
+        ...rest
     }));
+
+
+    
+
     let res;
     var data = input.map(t => t.timing.map(u => u.zone));
     var output = data[0].map((col, i) => data.map(row => row[i])).map((item, index) => {res = {}; res["zone"+(index+1)] = item.filter(t => t!==undefined); return res});
@@ -93,13 +90,16 @@ const getTraingandCertificationData = (datasource,formFactor,  mode) => {
 const getCandleStickData = (datasource, formFactor) => {
   let training_res = getTraingandCertificationData(datasource,formFactor, "Training")
   let certificate_res = getTraingandCertificationData(datasource,formFactor, "Certification")
+
   for(let i=0; i < training_res.length;i++){
-    training_res[i]["zone"] = "Zone-"+i
-    training_res[i]["max2"] = certificate_res[i]["max"]
-    training_res[i]["min2"] = certificate_res[i]["min"]
-    training_res[i]["avg2"] = certificate_res[i]["avg"]
-    training_res[i]["high2"] = certificate_res[i]["max"]+(certificate_res[i]["max"]/10)
-    training_res[i]["low2"] = certificate_res[i]["min"] - (certificate_res[i]["min"]/10)
+    if(training_res[i] && certificate_res[i]){
+      training_res[i]["zone"] = "Zone-"+i
+      training_res[i]["max2"] = certificate_res[i]["max"]
+      training_res[i]["min2"] = certificate_res[i]["min"]
+      training_res[i]["avg2"] = certificate_res[i]["avg"]
+      training_res[i]["high2"] = certificate_res[i]["max"]+(certificate_res[i]["max"]/10)
+      training_res[i]["low2"] = certificate_res[i]["min"] - (certificate_res[i]["min"]/10)
+    }
   }
   return training_res      
 }
@@ -173,21 +173,21 @@ class Info extends React.Component {
         this.barchart.current.componentDidMount(this.state.ssf_candle_stick)
         this.thresholdchart.current.componentDidMount(this.state.threshold_chart_ssf)
         this.linechart3.current.componentDidMount(this.state.total_time_taken_vs_session_number_Training_ssf)
-        this.linechart3.current.componentDidMount(this.state.total_time_taken_vs_session_number_Certification_ssf)
+        this.linechart4.current.componentDidMount(this.state.total_time_taken_vs_session_number_Certification_ssf)
       } else if (this.state.activepill === "MT"){
         this.linechart.current.componentDidMount(this.state.plot_of_number_of_training_sessions_vs_day_MT)
         this.linechart2.current.componentDidMount(this.state.plot_of_number_of_certification_sessions_vs_day_MT) 
         this.barchart.current.componentDidMount(this.state.mt_candle_stick)
         this.thresholdchart.current.componentDidMount(this.state.threshold_chart_mt)
         this.linechart3.current.componentDidMount(this.state.total_time_taken_vs_session_number_Training_mt)
-        this.linechart3.current.componentDidMount(this.state.total_time_taken_vs_session_number_Certification_mt)
+        this.linechart4.current.componentDidMount(this.state.total_time_taken_vs_session_number_Certification_mt)
       } else {
         this.linechart.current.componentDidMount(this.state.plot_of_number_of_training_sessions_vs_day_MICRO)
         this.linechart2.current.componentDidMount(this.state.plot_of_number_of_certification_sessions_vs_day_MICRO) 
         this.barchart.current.componentDidMount(this.state.micro_candle_stick)
         this.thresholdchart.current.componentDidMount(this.state.threshold_chart_micro)
         this.linechart3.current.componentDidMount(this.state.total_time_taken_vs_session_number_Training_micro)
-        this.linechart3.current.componentDidMount(this.state.total_time_taken_vs_session_number_Certification_micro)
+        this.linechart4.current.componentDidMount(this.state.total_time_taken_vs_session_number_Certification_micro)
       }
     }
 
@@ -296,28 +296,29 @@ class Info extends React.Component {
           total_no_of_training_sessions+=1
         }
 
-        if(i["mode"] === "Certification" && i["formFactor"] === "SSF"){
+        if(i["mode"] === "Training" && i["formFactor"] === "SSF"){
           total_no_of_training_sessions_SSF+=1
         }
-        if(i["mode"] === "Certification" && i["formFactor"] === "MT"){
+        if(i["mode"] === "Training" && i["formFactor"] === "MT"){
           total_no_of_training_sessions_MT+=1
         }
-        if(i["mode"] === "Certification" && i["formFactor"] === "MICRO"){
+        if(i["mode"] === "Training" && i["formFactor"] === "MICRO"){
           total_no_of_training_sessions_MICRO+=1
         }
 
-        if(i["mode"] === "Training" && i["formFactor"] === "SSF"){
+        if(i["mode"] === "Certification" && i["formFactor"] === "SSF"){
           total_no_of_certification_sessions_SSF+=1
         }
-        if(i["mode"] === "Training" && i["formFactor"] === "MT"){
+        if(i["mode"] === "Certification" && i["formFactor"] === "MT"){
           total_no_of_certification_sessions_MT+=1
         }
-        if(i["mode"] === "Training" && i["formFactor"] === "MICRO"){
+        if(i["mode"] === "Certification" && i["formFactor"] === "MICRO"){
           total_no_of_certification_sessions_MICRO+=1
         }
 
 
       }
+
 
       this.setState({
         total_no_of_training_sessions:  total_no_of_training_sessions,
@@ -370,7 +371,7 @@ class Info extends React.Component {
 
 
          for (let j of i["timing"]){
-            for (let k of j["zone"]){
+            for (let k of j["zoneInfo"]){
               total_time_taken += parseInt(k["timeInfo"][0])
             }
          }
@@ -439,21 +440,22 @@ class Info extends React.Component {
         let certification_unique_dates = Object.keys(certification_counts)
         let certification_sessions = Object.values(certification_counts)
         let plot_of_number_of_certification_sessions_vs_day = []
-        for( let i=0; i <= certification_unique_dates.length; i++){
+        for( let i=0; i < certification_unique_dates.length; i++){
           plot_of_number_of_certification_sessions_vs_day.push(
             {"dateTime":certification_unique_dates[i],"visits":certification_sessions[i],"stroke":"0"}
           )
         }
 
+        
+
         let training_unique_dates = Object.keys(training_counts)
         let training_sessions = Object.values(training_counts)
         let plot_of_number_of_training_sessions_vs_day = []
-        for( let i=0; i <= training_unique_dates.length; i++){
+        for( let i=0; i < training_unique_dates.length; i++){
           plot_of_number_of_training_sessions_vs_day.push(
             {"dateTime":training_unique_dates[i],"visits":training_sessions[i],"stroke":"0"}
           )
         }
-
         // ssf mt micro data
         // certification
 
@@ -553,21 +555,21 @@ class Info extends React.Component {
         for (let i of certification_data_source){
           if(i["formFactor"] === "SSF"){
             for (let j of i["timing"]){
-              for (let k of j["zone"]){
+              for (let k of j["zoneInfo"]){
                 total_time_chart_certification_ssf.push(parseFloat(k["timeInfo"][0]))
               }
             }
           }
           if(i["formFactor"] === "MT"){
             for (let j of i["timing"]){
-              for (let k of j["zone"]){
+              for (let k of j["zoneInfo"]){
                 total_time_chart_certification_mt.push(parseFloat(k["timeInfo"][0]))
               }
             }
           }
           if(i["formFactor"] === "MICRO"){
             for (let j of i["timing"]){
-              for (let k of j["zone"]){
+              for (let k of j["zoneInfo"]){
                 total_time_chart_certification_micro.push(parseFloat(k["timeInfo"][0]))
               }
             }
@@ -596,21 +598,21 @@ class Info extends React.Component {
         for (let i of training_data_source){
           if(i["formFactor"] === "SSF"){
             for (let j of i["timing"]){
-              for (let k of j["zone"]){
+              for (let k of j["zoneInfo"]){
                 total_time_chart_training_ssf.push(parseFloat(k["timeInfo"][0]))
               }
             }
           }
           if(i["formFactor"] === "MT"){
             for (let j of i["timing"]){
-              for (let k of j["zone"]){
+              for (let k of j["zoneInfo"]){
                 total_time_chart_training_mt.push(parseFloat(k["timeInfo"][0]))
               }
             }
           }
           if(i["formFactor"] === "MICRO"){
             for (let j of i["timing"]){
-              for (let k of j["zone"]){
+              for (let k of j["zoneInfo"]){
                 total_time_chart_training_micro.push(parseFloat(k["timeInfo"][0]))
               }
             }
@@ -632,7 +634,6 @@ class Info extends React.Component {
         let total_time_chart_training_micro_max = total_time_chart_training_micro[total_time_chart_training_micro.length - 1]
         let total_time_chart_training_micro_min = total_time_chart_training_micro[0]
         let total_time_chart_training_micro_avg = total_time_chart_training_micro.reduce((a, b) => a + b, 0)/total_time_chart_training_micro.length
-
 
 
       this.setState({

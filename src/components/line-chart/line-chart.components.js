@@ -17,6 +17,8 @@ class LineChart extends React.Component {
 
   componentDidMount = (chart_data= null) => {
     let chart = am4core.create(this.props.chart_id, am4charts.XYChart);
+    chart.cursor = new am4charts.XYCursor();
+
     let ssf_data = false
 
     chart.paddingRight = 20;
@@ -113,13 +115,18 @@ class LineChart extends React.Component {
     valueAxis2.renderer.grid.template.disabled = true;
 
 
-    let serie1 = chart.series.push(new am4charts.LineSeries());
+    let serie1 = chart.series.push(new am4charts.ColumnSeries());
     serie1.dataFields.dateX = "dateTime";
     serie1.dataFields.valueY = "visits";
-    serie1.tooltipText = "Visits: [bold]{valueY}[/]";
+    serie1.tooltipText = "Sessions: [bold]{valueY}[/]";
     serie1.fillOpacity = 0.8;
     serie1.strokeOpacity = 0;
     serie1.minBulletDistance = 1;
+
+    let columnTemplate = serie1.columns.template;
+    columnTemplate.strokeWidth = 0;
+    columnTemplate.strokeOpacity = 1;
+    columnTemplate.width = 30;
 
 
 
