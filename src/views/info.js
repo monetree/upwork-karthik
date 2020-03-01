@@ -3,7 +3,6 @@ import LineChart from "../components/line-chart/line-chart.components";
 import Sidebar from "../components/sidebar/sidebar.component";
 import Header from "../components/header/header.component";
 import Datepicker from "../UI/datepicker";
-import {Link} from "react-router-dom";
 import CandleChart from "../components/candle-chart/candle-chart.component";
 import LineChartReverse from "../components/line-chart-reverse/line-chart-reverse.component";
 import Popup from "reactjs-popup";
@@ -42,7 +41,6 @@ const getThresholdChart = (datasource, formFactor) => {
     
     }
   }
-
   return threshold_chart
 }
 
@@ -61,11 +59,10 @@ const getTraingandCertificationData = (datasource,formFactor,  mode) => {
 
   let input = new_data_source.map(({timing, ...rest}) => ({
         timing: timing.map(({zoneInfo}) => ({
-            zone: zoneInfo.reduce((sum, {timeInfo}) => sum + (timeInfo && + timeInfo[0] ? timeInfo[0] : 0), 0)
+            zone: zoneInfo.reduce((sum, {timeInfo}) => sum + (timeInfo && + timeInfo[0] ? parseFloat(timeInfo[0]) : 0), 0)
         })),
         ...rest
     }));
-
 
     
 
@@ -92,7 +89,7 @@ const getCandleStickData = (datasource, formFactor) => {
   let certificate_res = getTraingandCertificationData(datasource,formFactor, "Certification")
 
   for(let i=0; i < training_res.length;i++){
-    if(training_res[i] && certificate_res[i]){
+    if(training_res[i].length && certificate_res[i].length){
       training_res[i]["zone"] = "Zone-"+i
       training_res[i]["max2"] = certificate_res[i]["max"]
       training_res[i]["min2"] = certificate_res[i]["min"]
@@ -101,6 +98,33 @@ const getCandleStickData = (datasource, formFactor) => {
       training_res[i]["low2"] = certificate_res[i]["min"] - (certificate_res[i]["min"]/10)
     }
   }
+
+  if(training_res.length){
+    if(!certificate_res.length){
+      for(let i=0; i < training_res.length;i++){
+        training_res[i]["zone"] = "Zone-"+i
+        training_res[i]["max2"] = 0
+        training_res[i]["min2"] = 0
+        training_res[i]["avg2"] = 0
+        training_res[i]["high2"] = 0
+        training_res[i]["low2"] = 0
+    }
+    }
+}
+
+    if(certificate_res.length){
+      if(!training_res.length){
+        for(let i=0; i < certificate_res.length;i++){
+          certificate_res[i]["zone"] = "Zone-"+i
+          certificate_res[i]["max2"] = 0
+          certificate_res[i]["min2"] = 0
+          certificate_res[i]["avg2"] = 0
+          certificate_res[i]["high2"] = 0
+          certificate_res[i]["low2"] = 0
+      }
+      training_res = certificate_res
+    }
+}
   return training_res      
 }
 
@@ -231,6 +255,7 @@ class Info extends React.Component {
     }
     
     handleOperator = (operator, from_date=null, to_date = null) => {
+      
 
       this.setState({
         operator:operator
@@ -556,40 +581,65 @@ class Info extends React.Component {
           if(i["formFactor"] === "SSF"){
             for (let j of i["timing"]){
               for (let k of j["zoneInfo"]){
-                total_time_chart_certification_ssf.push(parseFloat(k["timeInfo"][0]))
+                if(k["timeInfo"][0]){
+                  total_time_chart_certification_ssf.push(parseFloat(k["timeInfo"][0]))
+                }
               }
             }
           }
           if(i["formFactor"] === "MT"){
             for (let j of i["timing"]){
               for (let k of j["zoneInfo"]){
-                total_time_chart_certification_mt.push(parseFloat(k["timeInfo"][0]))
+                if(k["timeInfo"][0]){
+                  total_time_chart_certification_mt.push(parseFloat(k["timeInfo"][0]))
+                }
               }
             }
           }
           if(i["formFactor"] === "MICRO"){
             for (let j of i["timing"]){
               for (let k of j["zoneInfo"]){
-                total_time_chart_certification_micro.push(parseFloat(k["timeInfo"][0]))
+                if(k["timeInfo"][0]){
+                  total_time_chart_certification_micro.push(parseFloat(k["timeInfo"][0]))
+                }
               }
             }
           }
         }
 
+ 
         total_time_chart_certification_ssf = total_time_chart_certification_ssf.sort(function(a, b){return a-b})
         let total_time_chart_certification_ssf_max = total_time_chart_certification_ssf[total_time_chart_certification_ssf.length - 1]
         let total_time_chart_certification_ssf_min = total_time_chart_certification_ssf[0]
         let total_time_chart_certification_ssf_avg = total_time_chart_certification_ssf.reduce((a, b) => a + b, 0)/total_time_chart_certification_ssf.length
+        
+        if(!total_time_chart_certification_ssf.length){
+          total_time_chart_certification_ssf_max = 0
+          total_time_chart_certification_ssf_min = 0
+          total_time_chart_certification_ssf_avg = 0
+        }
 
         total_time_chart_certification_mt = total_time_chart_certification_mt.sort(function(a, b){return a-b})
         let total_time_chart_certification_mt_max = total_time_chart_certification_mt[total_time_chart_certification_mt.length - 1]
         let total_time_chart_certification_mt_min = total_time_chart_certification_mt[0]
         let total_time_chart_certification_mt_avg = total_time_chart_certification_mt.reduce((a, b) => a + b, 0)/total_time_chart_certification_mt.length
 
+        if(!total_time_chart_certification_mt.length){
+          total_time_chart_certification_mt_max = 0
+          total_time_chart_certification_mt_min = 0
+          total_time_chart_certification_mt_avg = 0
+        }
+
         total_time_chart_certification_micro = total_time_chart_certification_micro.sort(function(a, b){return a-b})
         let total_time_chart_certification_micro_max = total_time_chart_certification_micro[total_time_chart_certification_micro.length - 1]
         let total_time_chart_certification_micro_min = total_time_chart_certification_micro[0]
         let total_time_chart_certification_micro_avg = total_time_chart_certification_micro.reduce((a, b) => a + b, 0)/total_time_chart_certification_micro.length
+
+        if(!total_time_chart_certification_micro.length){
+          total_time_chart_certification_micro_max = 0
+          total_time_chart_certification_micro_min = 0
+          total_time_chart_certification_micro_avg = 0
+        }
 
 
         let total_time_chart_training_ssf = []
@@ -599,41 +649,64 @@ class Info extends React.Component {
           if(i["formFactor"] === "SSF"){
             for (let j of i["timing"]){
               for (let k of j["zoneInfo"]){
-                total_time_chart_training_ssf.push(parseFloat(k["timeInfo"][0]))
+                if(k["timeInfo"][0]){
+                  total_time_chart_training_ssf.push(parseFloat(k["timeInfo"][0]))
+                }
               }
             }
           }
           if(i["formFactor"] === "MT"){
             for (let j of i["timing"]){
               for (let k of j["zoneInfo"]){
-                total_time_chart_training_mt.push(parseFloat(k["timeInfo"][0]))
+                if(k["timeInfo"][0]){
+                  total_time_chart_training_mt.push(parseFloat(k["timeInfo"][0]))
+                }
               }
             }
           }
           if(i["formFactor"] === "MICRO"){
             for (let j of i["timing"]){
               for (let k of j["zoneInfo"]){
-                total_time_chart_training_micro.push(parseFloat(k["timeInfo"][0]))
+                if(k["timeInfo"][0]){
+                  total_time_chart_training_micro.push(parseFloat(k["timeInfo"][0]))
+                }
               }
             }
           }
         }
 
-
+        
         total_time_chart_training_ssf = total_time_chart_training_ssf.sort(function(a, b){return a-b})
         let total_time_chart_training_ssf_max = total_time_chart_training_ssf[total_time_chart_training_ssf.length - 1]
         let total_time_chart_training_ssf_min = total_time_chart_training_ssf[0]
         let total_time_chart_training_ssf_avg = total_time_chart_training_ssf.reduce((a, b) => a + b, 0)/total_time_chart_training_ssf.length
+        if(!total_time_chart_training_ssf.length){
+          total_time_chart_training_ssf_max = 0
+          total_time_chart_training_ssf_min = 0
+          total_time_chart_training_ssf_avg = 0
+        }
 
         total_time_chart_training_mt = total_time_chart_training_mt.sort(function(a, b){return a-b})
         let total_time_chart_training_mt_max = total_time_chart_training_mt[total_time_chart_training_mt.length - 1]
         let total_time_chart_training_mt_min = total_time_chart_training_mt[0]
         let total_time_chart_training_mt_avg = total_time_chart_training_mt.reduce((a, b) => a + b, 0)/total_time_chart_training_mt.length
+        
+        if(!total_time_chart_training_mt.length){
+          total_time_chart_training_mt_max = 0
+          total_time_chart_training_mt_min = 0
+          total_time_chart_training_mt_avg = 0
+        }
 
         total_time_chart_training_micro = total_time_chart_training_micro.sort(function(a, b){return a-b})
         let total_time_chart_training_micro_max = total_time_chart_training_micro[total_time_chart_training_micro.length - 1]
         let total_time_chart_training_micro_min = total_time_chart_training_micro[0]
         let total_time_chart_training_micro_avg = total_time_chart_training_micro.reduce((a, b) => a + b, 0)/total_time_chart_training_micro.length
+        
+        if(!total_time_chart_training_micro.length){
+          total_time_chart_training_micro_max = 0
+          total_time_chart_training_micro_min = 0
+          total_time_chart_training_micro_avg = 0
+        }
 
 
       this.setState({
@@ -850,6 +923,7 @@ class Info extends React.Component {
             <Sidebar loadData={this.loadData} handleSidebar={this.handleSidebar}/>
               <div className="page-wrapper">
           
+
                 <Header handleOperator={this.handleOperator} handleSidebar={this.handleSidebar} operators={this.state.operators} />
                 <div className="content-wrapper">
                   <div className="content">

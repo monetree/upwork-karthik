@@ -24,7 +24,6 @@ class CandleChart extends React.Component {
 
     chart.data = []
 
-
       if(chart_data){
         chart.data = chart_data
       }
@@ -169,7 +168,75 @@ class CandleChart extends React.Component {
         createBackground(24, 0, 26, 100, "blue");
         createBackground(50, 0, 26, 100, "red");
         createBackground(76, 0, 24, 100, "blue");
-      } 
+      } else if(chart.data.length === 7){
+        createBackground(0, 0, 7, 100, "red");
+        createBackground(7, 0, 7.5, 100, "blue");
+        createBackground(14.4, 0, 7, 100, "red");
+        createBackground(21.3, 0, 7.2, 100, "blue");
+        createBackground(28.4, 0, 7, 100, "red");
+        createBackground(35.3, 0, 7.5, 100, "blue");
+        createBackground(42.9, 0, 7, 100, "red");
+        createBackground(49.8, 0, 7.3, 100, "blue");
+        createBackground(56.9, 0, 7, 100, "red");
+        createBackground(63.8, 0, 7.3, 100, "blue");
+        createBackground(71.1, 0, 7, 100, "red");
+        createBackground(78, 0, 7.5, 100, "blue");
+        createBackground(85.5, 0, 7, 100, "red");
+        createBackground(92.5, 0, 7.5, 100, "blue");
+      } else if(chart.data.length === 6){
+        createBackground(0, 0, 8, 100, "red");
+        createBackground(8, 0, 8.5, 100, "blue");
+        createBackground(16.6, 0, 8.2, 100, "red");
+        createBackground(24.8, 0, 8.3, 100, "blue");
+        createBackground(33.1, 0, 8.3, 100, "red");
+        createBackground(41.3, 0, 8.5, 100, "blue");
+        createBackground(49.9, 0, 8.5, 100, "red");
+        createBackground(58.3, 0, 8.5, 100, "blue");
+        createBackground(66.7, 0, 8.5, 100, "red");
+        createBackground(75.2, 0, 8.2, 100, "blue");
+        createBackground(83.3, 0, 8.2, 100, "red");
+        createBackground(91.4, 0, 8.6, 100, "blue");
+      } else if(chart.data.length === 5){
+        createBackground(0, 0, 10, 100, "red");
+        createBackground(10, 0, 10, 100, "blue");
+        createBackground(20, 0, 10, 100, "red");
+        createBackground(30, 0, 10, 100, "blue");
+        createBackground(40, 0, 10, 100, "red");
+        createBackground(50, 0, 10, 100, "blue");
+        createBackground(60, 0, 10, 100, "red");
+        createBackground(70, 0, 10, 100, "blue");
+        createBackground(80, 0, 10, 100, "red");
+        createBackground(90, 0, 10, 100, "blue");
+      }else if(chart.data.length === 4){
+        createBackground(0, 0, 13, 100, "red");
+        createBackground(13, 0, 12, 100, "blue");
+        createBackground(25, 0, 12, 100, "red");
+        createBackground(37, 0, 13, 100, "blue");
+        createBackground(50, 0, 13, 100, "red");
+        createBackground(63, 0, 12, 100, "blue");
+        createBackground(75, 0, 13, 100, "red");
+        createBackground(88, 0, 12, 100, "blue");
+      }else if(chart.data.length === 1){
+        createBackground(0, 0, 50, 100, "red");
+        createBackground(50, 0, 50, 100, "blue");
+      }else if(chart.data.length === 8){
+        createBackground(0, 0, 7, 100, "red");
+        createBackground(7, 0, 5.5, 100, "blue");
+        createBackground(12.5, 0, 6.2, 100, "red");
+        createBackground(18.6, 0, 6.2, 100, "blue");
+        createBackground(24.8, 0, 6.2, 100, "red");
+        createBackground(30.9, 0, 6.4, 100, "blue");
+        createBackground(37.4, 0, 6.4, 100, "red");
+        createBackground(43.8, 0, 6.3, 100, "blue");
+        createBackground(50.1, 0, 6.3, 100, "red");
+        createBackground(56.2, 0, 6.3, 100, "blue");
+        createBackground(62.4, 0, 6.3, 100, "red");
+        createBackground(68.7, 0, 6.3, 100, "blue");
+        createBackground(75, 0, 6.3, 100, "red");
+        createBackground(81.2, 0, 6.2, 100, "blue");
+        createBackground(87.4, 0, 6.3, 100, "red");
+        createBackground(93.6, 0, 6.3, 100, "blue");
+      }
 
       chart.maxZoomLevel = 1;
       chart.seriesContainer.draggable = false;

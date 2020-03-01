@@ -4,7 +4,8 @@ class Header extends React.Component {
     constructor(props){
         super(props);
         this.state = {
-            manageprofiletoggle:false
+            manageprofiletoggle:false,
+            operator: null
         }
     }
 
@@ -21,7 +22,8 @@ class Header extends React.Component {
 
       handleOperators = (e) => {
         this.setState({
-          manageprofiletoggle:false
+          manageprofiletoggle:false,
+          operator:e.target.value
         })
         this.props.handleOperator(e.target.value)
       }
@@ -29,6 +31,7 @@ class Header extends React.Component {
       
     render(){
       const { operators } = this.props;
+      const { operator } = this.state;
         return (          
             <header className="main-header" id="header">
             <nav className="navbar navbar-expand-lg navbar-light" id="navbar">
@@ -43,7 +46,7 @@ class Header extends React.Component {
                   <li className={this.state.manageprofiletoggle ? "dropdown user-menu" : "dropdown user-menu show" }>
                     <button className="dropdown-toggle nav-link" data-toggle="dropdown" onClick={this.manageProfileToggle}>
                       <img src="assets/img/user/user-md-01.jpg" className="user-image rounded-circle" alt="User Image" />
-                      <span style={{ color:'#5655B4' }}>operator info</span>
+                      <span style={{ color:'#5655B4' }}>{operator ? operator : "operator info"}</span>
                  
                     </button>
               

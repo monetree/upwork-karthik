@@ -13,6 +13,16 @@ class Sidebar extends React.Component {
         }
     }
 
+
+    handleHitDrop  = (arr) => {
+      arr = [arr]
+        let data = arr.map(obj => Object.fromEntries(
+          Object.entries(obj).map(([z, {Drop, Hit}]) => [z, Drop[0] + Hit[0]])
+      ));
+      data = Object.values(data[0]).reduce((a, b) => a + b, 0) 
+      return data
+    }
+
     dateFormatter = (date) => {
       let d_array = []
       date = date.split(",")
@@ -39,6 +49,29 @@ class Sidebar extends React.Component {
     }
 
 
+    convertToNew = (timing) => {
+      let new_arr = []
+      let keys = Object.keys(timing)
+      for(let i of keys){
+        new_arr.push(timing[i])
+      }
+
+
+
+      const outData = [];
+      let timeZone;
+      for (const obj of new_arr) {
+        timeZone = { zone: [] };
+        for (const arr of Object.values(obj)) {
+          timeZone.zone.push({ timeInfo: arr});
+        }
+        outData.push(timeZone);
+      }
+      
+      return outData
+    }
+
+
     convertToNewJson = (old_json) => {
       old_json = JSON.stringify(old_json)
       old_json = JSON.parse(old_json)
@@ -52,40 +85,21 @@ class Sidebar extends React.Component {
         delete Object.assign(old_json[i], {["mode"]: old_json[i]["Mode"] })["Mode"];
         delete Object.assign(old_json[i], {["repetitions"]: old_json[i]["Repetition"] })["Repetition"];
         delete Object.assign(old_json[i], {["timing"]: old_json[i]["Timing"] })["Timing"];
-      
-        Object.keys(old_json[i]["timing"]).forEach((zone, j) => {
-      
-          let zone_times = old_json[i]["timing"][zone];
-          let times_array = [];
-      
-          Object.keys(zone_times).forEach((step, k) => {
-      
-            times_array.push({
-              "stepName": "NA",
-              "timeInfo" : zone_times[step] //Int vs String correction required
-            })
-      
-          });
-
-          old_json[i]["new_timing"] = []
-      
-          old_json[i]["new_timing"].push({
-            "zone": times_array
-          })
-        });
 
         if(old_json[i]["formFactor"] === "SFF"){
           old_json[i]["formFactor"] = "SSF"
         }
 
+        old_json[i]["timing"] = this.convertToNew(old_json[i]["timing"])
         old_json[i]["dateTime"] = this.dateFormatter(old_json[i]["dateTime"])
         old_json[i]["mode"] = old_json[i]["mode"].replace(" mode", "")
         old_json[i]["mode"] = old_json[i]["mode"].replace(" Mode", "")
-        delete old_json[i]["timing"]; 
-        delete Object.assign(old_json[i], {["timing"]: old_json[i]["new_timing"] })["new_timing"];
+
         for(let o of old_json[i]["timing"]){
           delete Object.assign(o, {["zoneInfo"]: o["zone"] })["zone"];
         }
+
+        old_json[i]["hit_drop"] = this.handleHitDrop(old_json[i]["Handling"])
       }
 
       return old_json
@@ -134,8 +148,13 @@ readFilesNew = (files) => {
       count++;
       const reader = new FileReader();
       reader.onload = function (e) {
-          const obj = eval(e.target.result)
-          result.push(obj);
+          try{
+            const obj = eval(e.target.result)
+            result.push(obj);
+          }catch(err) {
+            const obj = JSON.parse(e.target.result)
+            result.push(obj);
+          }
       };
       reader.readAsText(i);
       if (count === files.length - 1) {
@@ -177,6 +196,9 @@ readFilesNew = (files) => {
 
     for (let i of new_jsons){
       for(let j of i["sessions"]){
+        if(j["formFactor"] === "SFF"){
+          j["formFactor"] = "SSF"
+        }
         for(let k of j["timing"]){
           for(let l of k["zoneInfo"]){
             if(l["timeInfo"].length && !l["timeInfo"][0]){
@@ -187,10 +209,7 @@ readFilesNew = (files) => {
       }
     }
 
-
-    for (let i=0; i<new_jsons.length;i++){
-      
-    }
+    // console.log(JSON.stringify(new_jsons))
 
     this.props.loadData(new_jsons)
   };
