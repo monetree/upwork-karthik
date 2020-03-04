@@ -89,8 +89,11 @@ class CandleChart extends React.Component {
       series.dataFields.lowValueY = low;
       series.dataFields.highValueY = high;
       series.simplifiedProcessing = true;
-
-      series.tooltipText = "Max:{openValueY.value}\nAvg:{lowValueY.value}\nMin:{valueY.value}";
+      if(background === "background"){
+        series.tooltipText = "Max:{openValueY.value}\nAvg:{avg}\nMin:{valueY.value}";
+      } else {
+        series.tooltipText = "Max:{openValueY.value}\nAvg:{avg2}\nMin:{valueY.value}";
+      }
       series.riseFromOpenState = undefined;
       series.dropFromOpenState = undefined;
       chart.cursor = new am4charts.XYCursor();

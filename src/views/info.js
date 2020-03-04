@@ -1177,9 +1177,12 @@ class Info extends React.Component {
                                                      {
                                                        total_time_chart_certification_ssf_avg || total_time_chart_certification_mt_avg || total_time_chart_certification_micro_avg ? (
                                                         <div style={{ background:'lightgrey', height:'30px', width:"100%", borderRadius:'5px', display:'flex' }}>
-                                                        <div style={{ background:'#5655B4', width:'15%',height:'30px', marginLeft:"20px", borderRight:'1px solid #F2D822' }}></div>
-                                                        <div style={{ background:'#5655B4', width:'20%',height:'30px', borderRight:'1px solid #76D9F4' }}></div>
-                                                        <div style={{ background:'#5655B4', width:'35%',height:'30px' }}></div>
+                                                        <div title={activepill === "SSF" ? total_time_chart_certification_ssf_min : activepill === "MT" ?
+                                                        total_time_chart_certification_mt_min : total_time_chart_certification_micro_min } style={{ background:'#5655B4', width:'15%',height:'30px', marginLeft:"20px", borderRight:'1px solid #F2D822' }}></div>
+                                                        <div title={activepill === "SSF" ? total_time_chart_certification_ssf_avg : activepill === "MT" ?
+                                                        total_time_chart_certification_mt_avg : total_time_chart_certification_micro_avg } style={{ background:'#5655B4', width:'20%',height:'30px', borderRight:'1px solid #76D9F4' }}></div>
+                                                        <div title={activepill === "SSF" ? total_time_chart_certification_ssf_max : activepill === "MT" ?
+                                                        total_time_chart_certification_mt_max : total_time_chart_certification_micro_max } style={{ background:'#5655B4', width:'35%',height:'30px' }}></div>
                                                         </div>
                                                        ): (
                                                         <div style={{ background:'lightgrey', height:'30px', width:"100%", borderRadius:'5px', display:'flex' }}>
@@ -1220,9 +1223,12 @@ class Info extends React.Component {
                                                        total_time_chart_training_ssf_avg || total_time_chart_training_mt_avg || total_time_chart_training_micro_avg ?
                                                        (
                                                         <div style={{ background:'lightgrey', height:'30px', width:"100%", borderRadius:'5px', display:'flex' }}>
-                                                        <div style={{ background:'#FF7171', width:'30%',height:'30px', marginLeft:"20px", borderRight:'1px solid #76D9F4' }}></div>
-                                                        <div style={{ background:'#FF7171', width:'20%',height:'30px', borderRight:'1px solid #F2D822' }}></div>
-                                                        <div style={{ background:'#FF7171', width:'25%',height:'30px' }}></div>
+                                                        <div title={activepill === "SSF" ? total_time_chart_training_ssf_min : activepill === "MT" ?
+                                                        total_time_chart_training_mt_min : total_time_chart_training_micro_min } style={{ background:'#FF7171', width:'30%',height:'30px', marginLeft:"20px", borderRight:'1px solid #76D9F4' }}></div>
+                                                        <div title={activepill === "SSF" ? total_time_chart_training_ssf_avg : activepill === "MT" ?
+                                                        total_time_chart_training_mt_avg : total_time_chart_training_micro_avg } style={{ background:'#FF7171', width:'20%',height:'30px', borderRight:'1px solid #F2D822' }}></div>
+                                                        <div title={activepill === "SSF" ? total_time_chart_training_ssf_max : activepill === "MT" ?
+                                                        total_time_chart_training_mt_max : total_time_chart_training_micro_max } style={{ background:'#FF7171', width:'25%',height:'30px' }}></div>
                                                       </div>
                                                        ): (
                                                         <div style={{ background:'lightgrey', height:'30px', width:"100%", borderRadius:'5px', display:'flex' }}>
@@ -1362,9 +1368,9 @@ class Info extends React.Component {
                                                     {
                                                       candle_stick_threshold.map((candle, index) => (
                                                         <div key={index} class="form-inline">
-                                                          Zone {index}
+                                                          Zone {index+1}
                                                            <div className="form-group">
-                                                              <input onChange={(e) => this.onCertificationThresholdChange(e, index)} className="form-control" placeholder="Certificate threshold" type="number" />
+                                                              <input onChange={(e) => this.onCertificationThresholdChange(e, index)} className="form-control" placeholder="Certification threshold" type="number" />
                                                             </div>
                                                             <div className="form-group">
                                                               <input onChange={(e) => this.onTrainingThresholdChange(e, index)} className="form-control" placeholder="Training threshold" type="number" />

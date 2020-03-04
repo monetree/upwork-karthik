@@ -81,25 +81,33 @@ class LineChart extends React.Component {
     chart.dateFormatter.inputDateFormat = "yyyy.MM.dd";
 
     let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+    if(chart.data.length === 1){
+      dateAxis = chart.xAxes.push(new am4charts.CategoryAxis());
+    }
 
 
+    if(chart.data.length !== 1){
+      dateAxis.baseInterval = {
+        "timeUnit": "minute",
+        "count": 1
+        };
 
-    dateAxis.baseInterval = {
-    "timeUnit": "minute",
-    "count": 1
-    };
+          
+    dateAxis.title.text = "Dates";
+    dateAxis.tooltipDateFormat = "HH:mm, d MMMM";
 
-      dateAxis.title.text = "Dates";
-      dateAxis.tooltipDateFormat = "HH:mm, d MMMM";
-      dateAxis.renderer.grid.template.disabled = true;
-      dateAxis.renderer.grid.template.location = 0;
-      dateAxis.renderer.minGridDistance = 50;
-      dateAxis.tooltip.disabled = true;
-      dateAxis.extraMax = 0.1;
-      dateAxis.extraMin = 0.1
-      dateAxis.dateFormats.setKey("month","dd-MMM-yy");
-      dateAxis.periodChangeDateFormats.setKey('month',"dd-MMM-yy")
-      dateAxis.renderer.labels.template.fontSize = 13
+
+        dateAxis.renderer.grid.template.disabled = true;
+        dateAxis.renderer.grid.template.location = 0;
+        dateAxis.renderer.minGridDistance = 50;
+        dateAxis.tooltip.disabled = true;
+        dateAxis.extraMax = 0.1;
+        dateAxis.extraMin = 0.1
+        dateAxis.dateFormats.setKey("month","dd-MMM-yy");
+        dateAxis.periodChangeDateFormats.setKey('month',"dd-MMM-yy")
+        dateAxis.renderer.labels.template.fontSize = 13
+    }
+
 
 
     // chart.zoom.disabled = true

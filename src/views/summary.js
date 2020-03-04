@@ -1252,7 +1252,7 @@ class Summary extends React.Component {
                                         {
                                           candle_stick_threshold.map((candle, index) => (
                                             <div key={index} class="form-inline">
-                                              Zone {index}
+                                              Zone {index+1}
                                               <div className="form-group">
                                                 <input onChange={(e) => this.onCertificationThresholdChange(e, index)} className="form-control" placeholder="Certificate threshold" type="number" />
                                               </div>
