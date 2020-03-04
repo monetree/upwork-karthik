@@ -15,7 +15,7 @@ class LineChart extends React.Component {
     
   
 
-  componentDidMount = (chart_data= null) => {
+  componentDidMount = (chart_data= null, category=false) => {
     let chart = am4core.create(this.props.chart_id, am4charts.XYChart);
     chart.cursor = new am4charts.XYCursor();
 
@@ -81,9 +81,10 @@ class LineChart extends React.Component {
     chart.dateFormatter.inputDateFormat = "yyyy.MM.dd";
 
     let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
-    if(chart.data.length === 1){
+    if(chart_data && chart_data.length === 1){
       dateAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     }
+    
 
 
     if(chart.data.length !== 1){
@@ -95,8 +96,6 @@ class LineChart extends React.Component {
           
     dateAxis.title.text = "Dates";
     dateAxis.tooltipDateFormat = "HH:mm, d MMMM";
-
-
         dateAxis.renderer.grid.template.disabled = true;
         dateAxis.renderer.grid.template.location = 0;
         dateAxis.renderer.minGridDistance = 50;
