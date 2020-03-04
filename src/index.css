@@ -473,3 +473,7 @@ ul#inline-list li {
 .ml15{
 	margin-left: 1.5cm !important;
 }
+
+ul#inline-menu li {
+	display:inline;
+  }

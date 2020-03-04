@@ -64,6 +64,9 @@ const getTraingandCertificationData = (datasource,formFactor,  mode) => {
         ...rest
     }));
 
+
+
+
     
 
     let res;

@@ -60,10 +60,11 @@ const getTraingandCertificationData = (datasource, formFactor, mode) => {
 
   let input = new_data_source.map(({timing, ...rest}) => ({
     timing: timing.map(({zoneInfo}) => ({
-        zone: zoneInfo.reduce((sum, {timeInfo}) => sum + (timeInfo && + timeInfo[0] ? timeInfo[0] : 0), 0)
+        zone: zoneInfo.reduce((sum, {timeInfo}) => sum + (timeInfo && + timeInfo[0] ? parseFloat(timeInfo[0]) : 0), 0)
     })),
     ...rest
 }));
+
 
 
   let res;
@@ -89,6 +90,7 @@ const getCandleStickData = (datasource, formFactor) => {
   let training_res = getTraingandCertificationData(datasource, formFactor, "Training")
   let certificate_res = getTraingandCertificationData(datasource, formFactor, "Certification")
 
+
   for (let i = 0; i < training_res.length; i++) {
     if (training_res[i] && certificate_res[i]) {
       training_res[i]["zone"] = "Zone-" + i
@@ -99,6 +101,36 @@ const getCandleStickData = (datasource, formFactor) => {
       training_res[i]["low2"] = certificate_res[i]["min"] - (certificate_res[i]["min"] / 10)
     }
   }
+
+  if(training_res.length){
+    if(!certificate_res.length){
+      for(let i=0; i < training_res.length;i++){
+        training_res[i]["zone"] = "Zone-"+i
+        training_res[i]["max2"] = 0
+        training_res[i]["min2"] = 0
+        training_res[i]["avg2"] = 0
+        training_res[i]["high2"] = 0
+        training_res[i]["low2"] = 0
+    }
+    }
+}
+
+    if(certificate_res.length){
+      if(!training_res.length){
+        for(let i=0; i < certificate_res.length;i++){
+          certificate_res[i]["zone"] = "Zone-"+i
+          certificate_res[i]["max2"] = 0
+          certificate_res[i]["min2"] = 0
+          certificate_res[i]["avg2"] = 0
+          certificate_res[i]["high2"] = 0
+          certificate_res[i]["low2"] = 0
+      }
+      training_res = certificate_res
+    }
+}
+
+
+
   return training_res
 }
 
