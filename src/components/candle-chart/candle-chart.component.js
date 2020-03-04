@@ -25,6 +25,7 @@ class CandleChart extends React.Component {
     chart.data = []
 
       if(chart_data){
+        console.log(chart_data, "-->")
         for(let i=0;i<chart_data.length;i++){
           chart_data[i]["zone"] = "Zone"+(i+1)
         }

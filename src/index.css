@@ -453,4 +453,5 @@ body {
 
   .popupContainer{
 	  width: 470px !important;
+	  margin-top: -1cm;
   }

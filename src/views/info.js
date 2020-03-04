@@ -81,8 +81,8 @@ const getTraingandCertificationData = (datasource,formFactor,  mode) => {
         i["high"] = i["zone"+counter].sort(function(a, b){return a-b})[i["zone"+counter].sort(function(a, b){return a-b}).length - 1]+(i["zone"+counter].sort(function(a, b){return a-b})[i["zone"+counter].sort(function(a, b){return a-b}).length - 1]/10)
         i["low"] = i["zone"+counter].sort(function(a, b){return a-b})[0] - (i["zone"+counter].sort(function(a, b){return a-b})[0]/10)
         i["background"] = "#37FF82"
-        i["threshold"] = 10
-        i["threshold2"] = 20
+        i["threshold"] = 0
+        i["threshold2"] = 0
       }
       return output
 }
@@ -838,8 +838,12 @@ class Info extends React.Component {
          candle_data = micro_candle_stick
        }
        for(let i=0;i<candle_data.length;i++){
-        candle_data[i]["threshold"] = training_threshold_for_candel[i]["threshold"]
-        candle_data[i]["threshold2"] = certification_threshold_for_candel[i]["threshold"] 
+        try{
+          candle_data[i]["threshold"] = training_threshold_for_candel[i]["threshold"]
+          candle_data[i]["threshold2"] = certification_threshold_for_candel[i]["threshold"] 
+        } catch(err) {
+          
+        }
        }
        if(this.state.activepill === "SSF"){
         this.barchart.current.componentDidMount(candle_data)
