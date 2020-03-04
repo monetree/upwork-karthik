@@ -65,10 +65,10 @@ class LineChartReverse extends React.Component {
     let serie1 = chart.series.push(new am4charts.ColumnSeries());
     serie1.dataFields.categoryX = "category";
     serie1.dataFields.valueY = "sessions";
-    serie1.tooltipText = "sessions: [bold]{valueY}[/]";
+    serie1.tooltipText = "Total time taken: [bold]{valueY}[/], Session:[bold]{categoryX}[/]";
     serie1.fillOpacity = 0.8;
     serie1.strokeOpacity = 0;
-    serie1.minBulletDistance = 1;
+    serie1.minBulletDistance = 1; 
 
     let columnTemplate = serie1.columns.template;
     columnTemplate.strokeWidth = 0;

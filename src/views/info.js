@@ -176,6 +176,25 @@ class Info extends React.Component {
         this.thresholdchart = React.createRef()
     }
 
+
+    componentDidMount(){
+      let datasource =  sessionStorage.getItem("datasource")
+      if(!datasource){
+        return
+      }
+
+      datasource = JSON.parse(datasource);
+
+      let operators = []
+      for(let i of datasource){
+        operators.push(i["sessions"][0]["name"])
+      }
+      this.setState({
+        datasource: datasource,
+        operators: operators
+      })
+    }
+
     addTotalTimeThreshold = () => {
       const { training_threshold,  certificate_threshold} = this.state;
 
@@ -847,6 +866,7 @@ class Info extends React.Component {
           total_time_chart_certification_micro_max,
           total_time_chart_certification_micro_min,
           total_time_chart_certification_micro_avg,
+          operator
         } = this.state;
 
         let certificate_data = JSON.stringify({
@@ -860,7 +880,8 @@ class Info extends React.Component {
           total_time_chart_certification_mt_avg:total_time_chart_certification_mt_avg,
           total_time_chart_certification_micro_max:total_time_chart_certification_micro_max,
           total_time_chart_certification_micro_min:total_time_chart_certification_micro_min,
-          total_time_chart_certification_micro_avg:total_time_chart_certification_micro_avg
+          total_time_chart_certification_micro_avg:total_time_chart_certification_micro_avg,
+          operator:operator
         })
 
         localStorage.setItem("certificate_data", certificate_data)
@@ -1034,7 +1055,7 @@ class Info extends React.Component {
                         <div className="col-xl-12 col-sm-12">
                         <div className="card card-default" style={{ border:'none' }}>
                             <div style={{ background:'#F6F6FB' }} >
-                                <button className={this.state.activepill === "SSF" ? "active-ssf-button blr5" : "ssf-button" } onClick={() => this.handleSsfButtons("SSF")}>SSF</button>
+                                <button className={this.state.activepill === "SSF" ? "active-ssf-button blr5" : "ssf-button" } onClick={() => this.handleSsfButtons("SSF")}>SFF</button>
                                 <button className={this.state.activepill === "MT" ? "active-ssf-button blr5" : "ssf-button" } onClick={() => this.handleSsfButtons("MT") }>MT</button>
                                 <button className={this.state.activepill === "MICRO" ? "active-ssf-button blr5 ssf-button-last" : "ssf-button ssf-button-last" } onClick={() => this.handleSsfButtons("MICRO")}>MICRO</button>
                             </div>
@@ -1322,12 +1343,12 @@ class Info extends React.Component {
                                             closeOnDocumentClick
                                             modal
                                         >{close => (
-                                            <div className="popupContainer">
+                                            <div className="popupContainer" style={{ width:'400px' }}>
                                             
                                                   <div>
                                                       <div  class="form-inline">
                                                       <div className="form-group">
-                                                        Certificate threshold
+                                                        Certification threshold
                                                       </div>
                                                       <div className="form-group ml15">
                                                         Training threshold
@@ -1337,7 +1358,7 @@ class Info extends React.Component {
                                                     {
                                                       candle_stick_threshold.map((candle, index) => (
                                                         <div key={index} class="form-inline">
-
+                                                          Zone {index}
                                                            <div className="form-group">
                                                               <input onChange={(e) => this.onCertificationThresholdChange(e, index)} className="form-control" placeholder="Certificate threshold" type="number" />
                                                             </div>

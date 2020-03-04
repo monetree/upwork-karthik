@@ -210,7 +210,7 @@ readFilesNew = (files) => {
     }
 
     // console.log(JSON.stringify(new_jsons))
-
+    sessionStorage.setItem("datasource", JSON.stringify(new_jsons))
     this.props.loadData(new_jsons)
   };
 
@@ -268,7 +268,7 @@ readFilesNew = (files) => {
                         <a className="sidenav-item-link" href="#" style={{ color:'#5D60A0' }}>
                         <img src ="assets/img/ic_data source@3x.png" className="sidebar-icons"></img>
                           
-                          <label className="nav-text" style={{color:'rgb(93, 96, 160)', marginTop:'10px'  }}>Data source
+                          <label className="nav-text" style={{color:'rgb(93, 96, 160)', marginTop:'10px', cursor:'pointer'  }}>Data source
                            <input type="file" style={{ display:'none' }} onChange={this.getfolder} directory="" webkitdirectory="" multiple accept=".json"/>
                           </label>
                           

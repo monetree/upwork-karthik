@@ -175,6 +175,18 @@ class Summary extends React.Component {
     this.thresholdchart = React.createRef()
   }
 
+  componentDidMount(){
+    let datasource =  sessionStorage.getItem("datasource")
+    if(!datasource){
+      return
+    }
+    datasource = JSON.parse(datasource);
+
+    this.setState({
+      datasource: datasource
+    }, () => this.handleAllOperator())
+  }
+
 
 
   handleSidebar = () => {
@@ -937,7 +949,7 @@ class Summary extends React.Component {
                   <div className="col-xl-12 col-sm-12">
                     <div className="card card-default" style={{ border: 'none' }}>
                       <div style={{ background: '#F6F6FB' }} >
-                        <button className={this.state.activepill === "SSF" ? "active-ssf-button blr5" : "ssf-button"} onClick={() => this.handleSsfButtons("SSF")}>SSF</button>
+                        <button className={this.state.activepill === "SSF" ? "active-ssf-button blr5" : "ssf-button"} onClick={() => this.handleSsfButtons("SSF")}>SFF</button>
                         <button className={this.state.activepill === "MT" ? "active-ssf-button blr5" : "ssf-button"} onClick={() => this.handleSsfButtons("MT")}>MT</button>
                         <button className={this.state.activepill === "MICRO" ? "active-ssf-button blr5 ssf-button-last" : "ssf-button ssf-button-last"} onClick={() => this.handleSsfButtons("MICRO")}>MICRO</button>
                       </div>
@@ -969,10 +981,10 @@ class Summary extends React.Component {
                                     <img src="assets/img/ic_undergone certification@3x.png" className="dashboard-content-icons"></img>
                                   </div>
                                   <div className="col-xl-6 col-sm-12">
-                                    <p>Certified ?</p>
+                                    <p>Total no of operators certified </p>
                                   </div>
                                   <div className="col-xl-2 col-sm-12 bold f25 black-color"></div>
-                                  <div className="col-xl-2 col-sm-12 bold f25 black-color"><i class="fa fa-thumbs-up" aria-hidden="true"></i>
+                                  <div className="col-xl-2 col-sm-12 bold f25 black-color"> - 
                                   </div>
                                 </div>
 
@@ -1002,7 +1014,7 @@ class Summary extends React.Component {
                                       <div>
                                         <div class="form-inline">
                                           <div className="form-group">
-                                            Certificate threshold
+                                            Certification threshold
                                                       </div>
                                           <div className="form-group ml15">
                                             Training threshold
@@ -1236,7 +1248,7 @@ class Summary extends React.Component {
                                         {
                                           candle_stick_threshold.map((candle, index) => (
                                             <div key={index} class="form-inline">
-
+                                              Zone {index}
                                               <div className="form-group">
                                                 <input onChange={(e) => this.onCertificationThresholdChange(e, index)} className="form-control" placeholder="Certificate threshold" type="number" />
                                               </div>

@@ -7,25 +7,22 @@ class Datepicker extends React.Component {
     endDate: new Date()
   };
 
-
-  componentDidMount(){
-    let node1 = document.getElementsByClassName("c1")
-    let node2 = document.getElementsByClassName("c2")
-    node1[0].classList.add("main-font")
-    node2[0].classList.add("main-font")
-
+  componentDidMount() {
+    let node1 = document.getElementsByClassName("c1");
+    let node2 = document.getElementsByClassName("c2");
+    node1[0].classList.add("main-font");
+    node2[0].classList.add("main-font");
   }
   // onChangeStartDate = date => this.setState({ startDate: date });
   // onChangeEndDate = date => this.setState({ endDate: date });
 
-  onChangeStartDate = (startDate) => {
-    this.setState({ startDate: startDate })
-  }
+  onChangeStartDate = startDate => {
+    this.setState({ startDate: startDate });
+  };
 
-  onChangeEndDate = (endDate) => {
-    this.setState({ endDate: endDate })
-    this.props.handleFilterDates(this.state.startDate, endDate)
-  }
+  onChangeEndDate = endDate => {
+    this.setState({ endDate: endDate });
+  };
 
   toggle = () => {
     this.component1.setOpen(this.focus);
@@ -37,9 +34,16 @@ class Datepicker extends React.Component {
   };
 
   render() {
+    const { startDate, endDate }= this.state;
     return (
       <div className="rect">
-        <div style={{ background:'#fff', borderRadius:'10px', paddingBottom:'10px' }}>
+        <div
+          style={{
+            background: "#fff",
+            borderRadius: "10px",
+            paddingBottom: "10px"
+          }}
+        >
           <div class="parent">
             <div class="div1">
               <img
@@ -97,10 +101,13 @@ class Datepicker extends React.Component {
                 onClick={() => this.toggle2()}
               ></img>{" "}
             </div>
+            <div className="div6">
+              <button className="new-btn" 
+                onClick={() => this.props.handleFilterDates(startDate, endDate)}
+              >Submit</button>
+            </div>
           </div>
-         
         </div>
-     
       </div>
     );
   }

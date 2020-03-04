@@ -118,7 +118,7 @@ class LineChart extends React.Component {
     let serie1 = chart.series.push(new am4charts.ColumnSeries());
     serie1.dataFields.dateX = "dateTime";
     serie1.dataFields.valueY = "visits";
-    serie1.tooltipText = "Sessions: [bold]{valueY}[/]";
+    serie1.tooltipText = "Sessions: [bold]{valueY}[/], Date:[bold]{dateX}[/]";
     serie1.fillOpacity = 0.8;
     serie1.strokeOpacity = 0;
     serie1.minBulletDistance = 1;

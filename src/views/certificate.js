@@ -16,6 +16,7 @@ class Certificate extends React.Component {
       total_time_chart_certification_micro_max:0,
       total_time_chart_certification_micro_min:0,
       total_time_chart_certification_micro_avg:0,
+      operator:''
     }
   }
 
@@ -35,7 +36,8 @@ class Certificate extends React.Component {
       total_time_chart_certification_mt_avg:certificate_data.total_time_chart_certification_mt_avg,
       total_time_chart_certification_micro_max:certificate_data.total_time_chart_certification_micro_max,
       total_time_chart_certification_micro_min:certificate_data.total_time_chart_certification_micro_min,
-      total_time_chart_certification_micro_avg:certificate_data.total_time_chart_certification_micro_avg
+      total_time_chart_certification_micro_avg:certificate_data.total_time_chart_certification_micro_avg,
+      operator:certificate_data.operator
     }, () => handleScreenCapture("certificate", "certificate", false))
 
   }
@@ -53,6 +55,7 @@ class Certificate extends React.Component {
       total_time_chart_certification_micro_max,
       total_time_chart_certification_micro_min,
       total_time_chart_certification_micro_avg,
+      operator
     } = this.state;
 
     return (
@@ -66,7 +69,7 @@ class Certificate extends React.Component {
         <div className="cert-mid">
           <div className="cert-m-text">
             <h3>This certificate is<br />presented to</h3>
-            <h4>Alex Sandler</h4>
+            <h4>{operator}</h4>
             <h5>Chief Training Officer</h5>
             <p>But I must explain to you how all this mistaken idea of denouncing pleasure and praising pain</p>
           </div>
