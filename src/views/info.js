@@ -164,7 +164,10 @@ class Info extends React.Component {
             certificate_threshold:0,
             training_threshold:0,
             certification_threshold_for_candel:[],
-            training_threshold_for_candel: []
+            training_threshold_for_candel: [],
+            ssf_candel_data:null,
+            mt_candel_data:null,
+            micro_candel_data:null
         }
         this.linechart = React.createRef()
         this.linechartfirst = React.createRef()
@@ -854,11 +857,17 @@ class Info extends React.Component {
         }
        }
        if(this.state.activepill === "SSF"){
-        this.barchart.current.componentDidMount(candle_data)
+         this.setState({
+           ssf_candel_data: candle_data
+         }, () => this.barchart.current.componentDidMount(this.state.ssf_candel_data, true))
       } else if (this.state.activepill === "MT"){
-        this.barchart.current.componentDidMount(candle_data)
+        this.setState({
+          mt_candel_data: candle_data
+        }, () => this.barchart.current.componentDidMount(this.state.mt_candel_data, true))
       } else {
-        this.barchart.current.componentDidMount(candle_data)
+        this.setState({
+          micro_candel_data: candle_data
+        }, () => this.barchart.current.componentDidMount(this.state.micro_candel_data, true))
       }
       close()
 
@@ -933,7 +942,10 @@ class Info extends React.Component {
          ssf_candle_stick,
          mt_candle_stick,
          micro_candle_stick,
-         activepill
+         activepill,
+         ssf_candel_data,
+         mt_candel_data,
+         micro_candel_data
       } = this.state;
       const candle_stick_threshold = activepill === "SSF" ? 
                                                 ssf_candle_stick : 
@@ -1201,11 +1213,11 @@ class Info extends React.Component {
                                                 
                                                   
                                                     <div>
-                                                      <p className="fl min-max-color">MIN - 
+                                                      <p className="fl min-max-color">MIN :&nbsp;
                                                       {activepill === "SSF" ? total_time_chart_certification_ssf_min : activepill === "MT" ?
                                                         total_time_chart_certification_mt_min : total_time_chart_certification_micro_min }
                                                       </p>
-                                                      <p className="fr min-max-color">MAX - 
+                                                      <p className="fr min-max-color">MAX :&nbsp;
                                                       {activepill === "SSF" ? total_time_chart_certification_ssf_max : activepill === "MT" ?
                                                         total_time_chart_certification_mt_max : total_time_chart_certification_micro_max }
                                                         </p>
@@ -1247,11 +1259,11 @@ class Info extends React.Component {
 
 
                                                     <div>
-                                                      <p className="fl min-max-color">MIN - 
+                                                      <p className="fl min-max-color">MIN :&nbsp;
                                                       {activepill === "SSF" ? total_time_chart_training_ssf_min : activepill === "MT" ?
                                                         total_time_chart_training_mt_min : total_time_chart_training_micro_min }
                                                       </p>
-                                                      <p className="fr min-max-color">MAX - 
+                                                      <p className="fr min-max-color">MAX : &nbsp;
                                                       {activepill === "SSF" ? total_time_chart_training_ssf_max : activepill === "MT" ?
                                                         total_time_chart_training_mt_max : total_time_chart_training_micro_max }
                                                       </p>
@@ -1378,10 +1390,24 @@ class Info extends React.Component {
                                                         <div key={index} class="form-inline">
                                                           Zone {index+1}
                                                            <div className="form-group">
-                                                              <input onChange={(e) => this.onCertificationThresholdChange(e, index)} className="form-control" placeholder="Certification threshold" type="number" />
+                                                             {
+                                                               ssf_candel_data || mt_candel_data || micro_candel_data ?
+                                                               (
+                                                                <input defaultValue={activepill === "SSF" ? ssf_candel_data[index]["threshold"] : activepill === "MT" ? mt_candel_data[index]["threshold"] : micro_candel_data[index]["threshold"] } onChange={(e) => this.onCertificationThresholdChange(e, index)} className="form-control" placeholder="Certification threshold" type="number" />
+                                                               ):(
+                                                                <input className="form-control" placeholder="Certification threshold" type="number" />
+                                                               )
+                                                             }
                                                             </div>
                                                             <div className="form-group">
-                                                              <input onChange={(e) => this.onTrainingThresholdChange(e, index)} className="form-control" placeholder="Training threshold" type="number" />
+                                                              {
+                                                                ssf_candel_data || mt_candel_data || micro_candel_data ?
+                                                                (
+                                                                  <input defaultValue={activepill === "SSF" ? ssf_candel_data[index]["threshold2"] : activepill === "MT" ? mt_candel_data[index]["threshold2"] : micro_candel_data[index]["threshold2"]}  onChange={(e) => this.onTrainingThresholdChange(e, index)} className="form-control" placeholder="Training threshold" type="number" />
+                                                                ):(
+                                                                  <input className="form-control" placeholder="Training threshold" type="number" />
+                                                                )
+                                                              }
                                                             </div>
                                                         </div>
                                                       ))

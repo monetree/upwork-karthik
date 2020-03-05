@@ -90,9 +90,9 @@ class CandleChart extends React.Component {
       series.dataFields.highValueY = high;
       series.simplifiedProcessing = true;
       if(background === "background"){
-        series.tooltipText = "Max:{openValueY.value}\nAvg:{avg}\nMin:{valueY.value}";
+        series.tooltipText = "Max:{openValueY.value}\nAvg:{avg}\nMin:{valueY.value}\nThreshold:{threshold}";
       } else {
-        series.tooltipText = "Max:{openValueY.value}\nAvg:{avg2}\nMin:{valueY.value}";
+        series.tooltipText = "Max:{openValueY.value}\nAvg:{avg2}\nMin:{valueY.value}\nThreshold:{threshold2}";
       }
       series.riseFromOpenState = undefined;
       series.dropFromOpenState = undefined;
