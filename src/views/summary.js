@@ -834,7 +834,9 @@ class Summary extends React.Component {
       micro_candle_stick,
       ssf_candel_data,
       mt_candel_data,
-      micro_candel_data
+      micro_candel_data,
+      certificate_threshold,
+      training_threshold
     } = this.state;
     const candle_stick_threshold = activepill === "SSF" ?
       ssf_candle_stick :
@@ -1042,10 +1044,10 @@ class Summary extends React.Component {
                                         <div class="form-inline">
 
                                           <div className="form-group">
-                                            <input onChange={(e) => this.setState({ certificate_threshold: e.target.value })} className="form-control" placeholder="Certificate threshold" type="number" />
+                                            <input defaultValue={certificate_threshold} onChange={(e) => this.setState({ certificate_threshold: e.target.value })} className="form-control" placeholder="Certification threshold" type="number" />
                                           </div>
                                           <div className="form-group">
-                                            <input onChange={(e) => this.setState({ training_threshold: e.target.value })} className="form-control" placeholder="Training threshold" type="number" />
+                                            <input defaultValue={training_threshold} onChange={(e) => this.setState({ training_threshold: e.target.value })} className="form-control" placeholder="Training threshold" type="number" />
                                           </div>
                                         </div>
 
@@ -1077,7 +1079,7 @@ class Summary extends React.Component {
                                           {activepill === "SSF" ? total_time_chart_certification_ssf_avg : activepill === "MT" ?
                                             total_time_chart_certification_mt_avg : total_time_chart_certification_micro_avg}
                                         </p>
-                                        <p className="cyan-color f12" style={{ marginLeft: '15%' }}>0</p>
+                                        <p className="cyan-color f12" style={{ marginLeft: '15%' }}>{training_threshold}</p>
                                       </div>
 
                                       {
@@ -1119,7 +1121,7 @@ class Summary extends React.Component {
                                         {activepill === "SSF" ? total_time_chart_training_ssf_avg : activepill === "MT" ?
                                           total_time_chart_training_mt_avg : total_time_chart_training_micro_avg}
                                       </p>
-                                      <p className="cyan-color f12" style={{ marginLeft: '15%' }}>0</p>
+                                      <p className="cyan-color f12" style={{ marginLeft: '15%' }}>{certificate_threshold}</p>
                                     </div>
                                     <div>
                                       {
@@ -1264,29 +1266,42 @@ class Summary extends React.Component {
                                                       </div>
                                         </div>
 
-                                        {
+                                              {
                                                       candle_stick_threshold.map((candle, index) => (
                                                         <div key={index} class="form-inline">
                                                           Zone {index+1}
                                                            <div className="form-group">
-                                                             {
-                                                               ssf_candel_data || mt_candel_data || micro_candel_data ?
-                                                               (
+                                                            {
+                                                              activepill === "MT" && mt_candel_data ?
+                                                              (
                                                                 <input defaultValue={activepill === "SSF" ? ssf_candel_data[index]["threshold"] : activepill === "MT" ? mt_candel_data[index]["threshold"] : micro_candel_data[index]["threshold"] } onChange={(e) => this.onCertificationThresholdChange(e, index)} className="form-control" placeholder="Certification threshold" type="number" />
-                                                               ):(
-                                                                <input className="form-control" placeholder="Certification threshold" type="number" />
-                                                               )
-                                                             }
-                                                            </div>
-                                                            <div className="form-group">
-                                                              {
-                                                                ssf_candel_data || mt_candel_data || micro_candel_data ?
-                                                                (
-                                                                  <input defaultValue={activepill === "SSF" ? ssf_candel_data[index]["threshold2"] : activepill === "MT" ? mt_candel_data[index]["threshold2"] : micro_candel_data[index]["threshold2"]}  onChange={(e) => this.onTrainingThresholdChange(e, index)} className="form-control" placeholder="Training threshold" type="number" />
-                                                                ):(
-                                                                  <input className="form-control" placeholder="Training threshold" type="number" />
+                                                              ):activepill === "SSF" && ssf_candel_data ?
+                                                              (
+                                                                <input defaultValue={activepill === "SSF" ? ssf_candel_data[index]["threshold"] : activepill === "MT" ? mt_candel_data[index]["threshold"] : micro_candel_data[index]["threshold"] } onChange={(e) => this.onCertificationThresholdChange(e, index)} className="form-control" placeholder="Certification threshold" type="number" />
+                                                              ): activepill === "MICTO" && micro_candel_data ? (
+                                                                <input defaultValue={activepill === "SSF" ? ssf_candel_data[index]["threshold"] : activepill === "MT" ? mt_candel_data[index]["threshold"] : micro_candel_data[index]["threshold"] } onChange={(e) => this.onCertificationThresholdChange(e, index)} className="form-control" placeholder="Certification threshold" type="number" />
+                                                              ):(
+                                                                <input onChange={(e) => this.onCertificationThresholdChange(e, index)} className="form-control" placeholder="Certification threshold" type="number" />
+                                                              )
+                                                            }
+
+
+                                                            {
+                                                              activepill === "MT" && mt_candel_data ?
+                                                              (
+                                                                <input defaultValue={activepill === "SSF" ? ssf_candel_data[index]["threshold2"] : activepill === "MT" ? mt_candel_data[index]["threshold"] : micro_candel_data[index]["threshold"] } onChange={(e) => this.onTrainingThresholdChange(e, index)} className="form-control" placeholder="Certification threshold" type="number" />
+                                                              ):activepill === "SSF" && ssf_candel_data ?
+                                                              (
+                                                                <input defaultValue={activepill === "SSF" ? ssf_candel_data[index]["threshold2"] : activepill === "MT" ? mt_candel_data[index]["threshold"] : micro_candel_data[index]["threshold"] } onChange={(e) => this.onTrainingThresholdChange(e, index)} className="form-control" placeholder="Certification threshold" type="number" />
+                                                              ): activepill === "MICTO" && micro_candel_data ? (
+                                                                <input defaultValue={activepill === "SSF" ? ssf_candel_data[index]["threshold2"] : activepill === "MT" ? mt_candel_data[index]["threshold"] : micro_candel_data[index]["threshold"] } onChange={(e) => this.onTrainingThresholdChange(e, index)} className="form-control" placeholder="Certification threshold" type="number" />
+                                                              ):(
+                                                                <input onChange={(e) => this.onTrainingThresholdChange(e, index)} className="form-control" placeholder="Training threshold" type="number" />
                                                                 )
-                                                              }
+                                                            }
+
+
+
                                                             </div>
                                                         </div>
                                                       ))
