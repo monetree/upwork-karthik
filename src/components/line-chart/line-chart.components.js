@@ -81,6 +81,13 @@ class LineChart extends React.Component {
     chart.dateFormatter.inputDateFormat = "yyyy.MM.dd";
 
     let dateAxis = chart.xAxes.push(new am4charts.DateAxis());
+
+    if(chart_data && chart_data.length === 2){
+      if(!chart_data[1]["dateTime"]){
+        chart.data.pop()
+      }
+    }
+
     if(chart.data.length === 1){
       dateAxis = chart.xAxes.push(new am4charts.CategoryAxis());
     }

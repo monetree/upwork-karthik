@@ -544,14 +544,22 @@ class Info extends React.Component {
           )
         }
 
+        
+
+        
+
         let mt_training_unique_dates = Object.keys(mt_training_counts)
         let mt_training_sessions = Object.values(mt_training_counts)
         let plot_of_number_of_training_sessions_vs_day_MT = []
         for( let i=0; i <= mt_training_unique_dates.length; i++){
-          plot_of_number_of_training_sessions_vs_day_MT.push(
-            {"dateTime":mt_training_unique_dates[i],"visits":mt_training_sessions[i],"stroke":"0"}
-          )
+          if(mt_training_unique_dates[i]){
+            plot_of_number_of_training_sessions_vs_day_MT.push(
+              {"dateTime":mt_training_unique_dates[i],"visits":mt_training_sessions[i],"stroke":"0"}
+            )
+          }
         }
+
+  
 
         let micro_training_unique_dates = Object.keys(micro_training_counts)
         let micro_training_sessions = Object.values(micro_training_counts)
